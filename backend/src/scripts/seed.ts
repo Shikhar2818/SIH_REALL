@@ -7,7 +7,7 @@ export const seedDatabase = async (): Promise<void> => {
 
     // Check if counsellors already exist
     const existingCounsellors = await Counsellor.find({
-      email: { $in: ['mustbemonis@gmail.com', 'amaanhaque26@gmail.com'] }
+      email: { $in: ['sarah@counsellor.com', 'amaan@counsellor.com', 'monis@counsellor.com'] }
     });
 
     if (existingCounsellors.length > 0) {
@@ -15,10 +15,10 @@ export const seedDatabase = async (): Promise<void> => {
       return;
     }
 
-    // Create Monis counsellor
-    const monis = new Counsellor({
-      name: 'Monis',
-      email: 'mustbemonis@gmail.com',
+    // Create Dr. Sarah Johnson counsellor
+    const sarah = new Counsellor({
+      name: 'Dr. Sarah Johnson',
+      email: 'sarah@counsellor.com',
       verified: true,
       languages: ['English', 'Hindi'],
       availabilitySlots: [
@@ -30,10 +30,10 @@ export const seedDatabase = async (): Promise<void> => {
       ],
     });
 
-    // Create Amaan counsellor
+    // Create Dr. Amaan Ahmed counsellor
     const amaan = new Counsellor({
-      name: 'Amaan',
-      email: 'amaanhaque26@gmail.com',
+      name: 'Dr. Amaan Ahmed',
+      email: 'amaan@counsellor.com',
       verified: true,
       languages: ['English', 'Hindi', 'Urdu'],
       availabilitySlots: [
@@ -46,9 +46,25 @@ export const seedDatabase = async (): Promise<void> => {
       ],
     });
 
-    await Promise.all([monis.save(), amaan.save()]);
+    // Create Dr. Monis Kumar counsellor
+    const monis = new Counsellor({
+      name: 'Dr. Monis Kumar',
+      email: 'monis@counsellor.com',
+      verified: true,
+      languages: ['English', 'Hindi', 'Tamil'],
+      availabilitySlots: [
+        { dayOfWeek: 1, startTime: '08:00', endTime: '16:00' }, // Monday
+        { dayOfWeek: 2, startTime: '08:00', endTime: '16:00' }, // Tuesday
+        { dayOfWeek: 3, startTime: '08:00', endTime: '16:00' }, // Wednesday
+        { dayOfWeek: 4, startTime: '08:00', endTime: '16:00' }, // Thursday
+        { dayOfWeek: 5, startTime: '08:00', endTime: '16:00' }, // Friday
+        { dayOfWeek: 0, startTime: '10:00', endTime: '14:00' }, // Sunday
+      ],
+    });
 
-    console.log('Database seeded successfully with Monis and Amaan counsellors');
+    await Promise.all([sarah.save(), amaan.save(), monis.save()]);
+
+    console.log('Database seeded successfully with Dr. Sarah, Dr. Amaan, and Dr. Monis counsellors');
   } catch (error) {
     console.error('Error seeding database:', error);
     throw error;

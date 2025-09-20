@@ -34,14 +34,40 @@ const SampleLogins = () => {
       features: ['View analytics dashboard', 'Manage users', 'Export data', 'System administration'],
     },
     {
-      role: 'Counsellor',
+      role: 'Dr. Sarah Johnson',
       icon: Heart,
       color: 'text-green-600',
       bgColor: 'bg-green-50',
       borderColor: 'border-green-200',
       credentials: {
-        email: 'counsellor@test.com',
-        password: 'counsellor123',
+        email: 'sarah@counsellor.com',
+        password: 'sarah123',
+      },
+      description: 'Manage bookings, view student profiles, track sessions',
+      features: ['Manage bookings', 'View student profiles', 'Track sessions', 'Update availability'],
+    },
+    {
+      role: 'Dr. Amaan Ahmed',
+      icon: Heart,
+      color: 'text-purple-600',
+      bgColor: 'bg-purple-50',
+      borderColor: 'border-purple-200',
+      credentials: {
+        email: 'amaan@counsellor.com',
+        password: 'amaan123',
+      },
+      description: 'Manage bookings, view student profiles, track sessions',
+      features: ['Manage bookings', 'View student profiles', 'Track sessions', 'Update availability'],
+    },
+    {
+      role: 'Dr. Monis Kumar',
+      icon: Heart,
+      color: 'text-indigo-600',
+      bgColor: 'bg-indigo-50',
+      borderColor: 'border-indigo-200',
+      credentials: {
+        email: 'monis@counsellor.com',
+        password: 'monis123',
       },
       description: 'Manage bookings, view student profiles, track sessions',
       features: ['Manage bookings', 'View student profiles', 'Track sessions', 'Update availability'],
@@ -74,7 +100,7 @@ const SampleLogins = () => {
         </motion.div>
 
         {/* Sample Logins Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
           {sampleLogins.map((login, index) => (
             <motion.div
               key={login.role}
@@ -219,8 +245,8 @@ const SampleLogins = () => {
                 <div className="flex items-start space-x-3">
                   <Heart className="w-5 h-5 text-green-600 mt-0.5" />
                   <div>
-                    <div className="font-medium text-gray-900">Counsellor</div>
-                    <div className="text-sm text-gray-600">Manage bookings, view student profiles, track sessions</div>
+                    <div className="font-medium text-gray-900">Counsellors</div>
+                    <div className="text-sm text-gray-600">Dr. Sarah, Dr. Amaan, Dr. Monis - Manage bookings, view student profiles, track sessions</div>
                   </div>
                 </div>
               </div>

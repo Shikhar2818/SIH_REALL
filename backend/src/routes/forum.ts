@@ -3,6 +3,7 @@ import { body, validationResult } from 'express-validator';
 import { authenticateToken, requireStudent, AuthRequest } from '../middleware/auth';
 import ForumPost from '../models/ForumPost';
 import User from '../models/User';
+import NotificationService from '../services/notificationService';
 
 const router = express.Router();
 
@@ -92,6 +93,16 @@ router.post('/posts', [
     });
 
     await post.save();
+
+    // Create concerning post alert if applicable
+    if (category && mood && ['anxiety', 'depression', 'stress'].includes(category)) {
+      await NotificationService.createConcerningPostAlert(
+        post._id.toString(),
+        req.user!.id,
+        category,
+        mood
+      );
+    }
 
     const populatedPost = await ForumPost.findById(post._id)
       .populate('authorId', 'name role');

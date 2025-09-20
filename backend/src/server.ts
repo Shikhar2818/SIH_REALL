@@ -13,7 +13,9 @@ import bookingRoutes from './routes/bookings';
 import counsellorRoutes from './routes/counsellors';
 import chatRoutes from './routes/chat';
 import adminRoutes from './routes/admin';
+import adminExtendedRoutes from './routes/adminExtended';
 import counsellorAuthRoutes from './routes/counsellor';
+import counsellorExtendedRoutes from './routes/counsellorExtended';
 import forumRoutes from './routes/forum';
 
 // Load environment variables
@@ -22,11 +24,13 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 3001;
 
-// Rate limiting
+// Rate limiting (more lenient for development)
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // limit each IP to 100 requests per windowMs
+  max: process.env.NODE_ENV === 'production' ? 100 : 1000, // 1000 requests in dev, 100 in production
   message: 'Too many requests from this IP, please try again later.',
+  standardHeaders: true,
+  legacyHeaders: false,
 });
 
 // Middleware
@@ -52,6 +56,17 @@ app.get('/health', (req, res) => {
   };
   
   res.json(healthStatus);
+});
+
+// Clear rate limit cache (for development)
+app.post('/clear-rate-limit', (req, res) => {
+  if (process.env.NODE_ENV === 'development') {
+    // Clear rate limit cache
+    limiter.resetKey(req.ip);
+    res.json({ message: 'Rate limit cleared for IP: ' + req.ip });
+  } else {
+    res.status(403).json({ error: 'Not available in production' });
+  }
 });
 
 // Detailed health check for monitoring
@@ -86,7 +101,9 @@ app.use('/api/bookings', bookingRoutes);
 app.use('/api/counsellors', counsellorRoutes);
 app.use('/api/chat', chatRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/admin/extended', adminExtendedRoutes);
 app.use('/api/counsellor', counsellorAuthRoutes);
+app.use('/api/counsellor/extended', counsellorExtendedRoutes);
 app.use('/api/forum', forumRoutes);
 
 // 404 handler

@@ -9,7 +9,7 @@ export const seedUsers = async (): Promise<void> => {
 
     // Check if users already exist
     const existingUsers = await User.find({
-      email: { $in: ['student@test.com', 'admin@test.com', 'counsellor@test.com'] }
+      email: { $in: ['student@test.com', 'admin@test.com', 'sarah@counsellor.com', 'amaan@counsellor.com', 'monis@counsellor.com'] }
     });
 
     if (existingUsers.length > 0) {
@@ -36,9 +36,23 @@ export const seedUsers = async (): Promise<void> => {
         consent: true,
       },
       {
-        name: 'Dr. Sarah Counsellor',
-        email: 'counsellor@test.com',
-        password: 'counsellor123',
+        name: 'Dr. Sarah Johnson',
+        email: 'sarah@counsellor.com',
+        password: 'sarah123',
+        role: 'counsellor',
+        consent: true,
+      },
+      {
+        name: 'Dr. Amaan Ahmed',
+        email: 'amaan@counsellor.com',
+        password: 'amaan123',
+        role: 'counsellor',
+        consent: true,
+      },
+      {
+        name: 'Dr. Monis Kumar',
+        email: 'monis@counsellor.com',
+        password: 'monis123',
         role: 'counsellor',
         consent: true,
       },

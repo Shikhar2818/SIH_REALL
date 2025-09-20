@@ -1,4 +1,5 @@
 import express from 'express';
+import User from '../models/User';
 import Counsellor from '../models/Counsellor';
 import Booking from '../models/Booking';
 
@@ -7,11 +8,28 @@ const router = express.Router();
 // Get all counsellors
 router.get('/', async (req, res) => {
   try {
-    const counsellors = await Counsellor.find({ verified: true })
-      .select('name email languages availabilitySlots')
+    // Get counsellor users from User collection
+    const counsellors = await User.find({ role: 'counsellor' })
+      .select('name email')
       .sort({ name: 1 });
 
-    res.json({ counsellors });
+    // Also get additional data from Counsellor collection
+    const counsellorData = await Counsellor.find({ verified: true })
+      .select('name email languages availabilitySlots');
+
+    // Merge the data
+    const mergedCounsellors = counsellors.map(user => {
+      const counsellorInfo = counsellorData.find(c => c.email === user.email);
+      return {
+        _id: user._id, // Use User ID for booking
+        name: user.name,
+        email: user.email,
+        languages: counsellorInfo?.languages || ['English'],
+        availabilitySlots: counsellorInfo?.availabilitySlots || []
+      };
+    });
+
+    res.json({ counsellors: mergedCounsellors });
   } catch (error) {
     console.error('Get counsellors error:', error);
     res.status(500).json({ error: 'Internal server error' });
@@ -21,12 +39,27 @@ router.get('/', async (req, res) => {
 // Get counsellor by ID
 router.get('/:id', async (req, res) => {
   try {
-    const counsellor = await Counsellor.findById(req.params.id)
-      .select('name email languages availabilitySlots');
+    // Get from User collection first
+    const user = await User.findOne({ 
+      _id: req.params.id, 
+      role: 'counsellor' 
+    });
 
-    if (!counsellor) {
+    if (!user) {
       return res.status(404).json({ error: 'Counsellor not found' });
     }
+
+    // Get additional data from Counsellor collection
+    const counsellorInfo = await Counsellor.findOne({ email: user.email })
+      .select('name email languages availabilitySlots');
+
+    const counsellor = {
+      _id: user._id,
+      name: user.name,
+      email: user.email,
+      languages: counsellorInfo?.languages || ['English'],
+      availabilitySlots: counsellorInfo?.availabilitySlots || []
+    };
 
     res.json({ counsellor });
   } catch (error) {

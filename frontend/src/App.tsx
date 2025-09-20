@@ -3,11 +3,9 @@ import { AuthProvider } from './contexts/AuthContext'
 import { LanguageProvider } from './contexts/LanguageContext'
 import ProtectedRoute from './components/ProtectedRoute'
 import Layout from './components/Layout'
-import RoleBasedNav from './components/RoleBasedNav'
 import Home from './pages/Home'
 import Login from './pages/Login'
 import Register from './pages/Register'
-import Dashboard from './pages/Dashboard'
 import Bookings from './pages/Bookings'
 import Screening from './pages/Screening'
 import Resources from './pages/Resources'
@@ -16,6 +14,9 @@ import UserManagement from './pages/UserManagement'
 import StudentDashboard from './pages/StudentDashboard'
 import PeerCommunity from './pages/PeerCommunity'
 import SampleLogins from './pages/SampleLogins'
+import CounsellorDashboard from './pages/CounsellorDashboard'
+import CounsellorProfile from './pages/CounsellorProfile'
+import CounsellorBookings from './pages/CounsellorBookings'
 import NotFound from './pages/NotFound'
 
 function App() {
@@ -56,6 +57,21 @@ function App() {
             <Route path="peer-community" element={
               <ProtectedRoute>
                 <PeerCommunity />
+              </ProtectedRoute>
+            } />
+            <Route path="counsellor-dashboard" element={
+              <ProtectedRoute>
+                <CounsellorDashboard />
+              </ProtectedRoute>
+            } />
+            <Route path="counsellor-profile" element={
+              <ProtectedRoute>
+                <CounsellorProfile />
+              </ProtectedRoute>
+            } />
+            <Route path="counsellor-bookings" element={
+              <ProtectedRoute>
+                <CounsellorBookings />
               </ProtectedRoute>
             } />
             <Route path="sample-logins" element={<SampleLogins />} />

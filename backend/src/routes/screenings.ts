@@ -2,6 +2,7 @@ import express from 'express';
 import { body, validationResult } from 'express-validator';
 import Screening from '../models/Screening';
 import { authenticateToken, AuthRequest } from '../middleware/auth';
+import NotificationService from '../services/notificationService';
 
 const router = express.Router();
 
@@ -86,6 +87,15 @@ router.post('/', [
     });
 
     await screening.save();
+
+    // Create mental health alert for severe cases
+    if (severity === 'moderately_severe' || severity === 'severe') {
+      await NotificationService.createMentalHealthAlert(
+        screening._id.toString(),
+        severity,
+        req.user!.id
+      );
+    }
 
     res.status(201).json({
       message: 'Screening submitted successfully',
