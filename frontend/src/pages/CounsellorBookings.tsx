@@ -54,8 +54,11 @@ const CounsellorBookings = () => {
 
   const fetchBookings = async () => {
     try {
-      const token = localStorage.getItem('token')
-      if (!token) return
+      const token = localStorage.getItem('accessToken')
+      if (!token) {
+        console.error('No authentication token found')
+        return
+      }
 
       const response = await fetch('http://localhost:3001/api/counsellor/extended/all-bookings', {
         headers: {
@@ -66,9 +69,9 @@ const CounsellorBookings = () => {
 
       if (response.ok) {
         const bookingsData = await response.json()
-        setBookings(bookingsData)
+        setBookings(bookingsData.bookings || [])
       } else {
-        console.error('Failed to fetch bookings')
+        console.error('Failed to fetch bookings:', response.status)
       }
     } catch (error) {
       console.error('Error fetching bookings:', error)
@@ -99,27 +102,34 @@ const CounsellorBookings = () => {
   const handleBookingAction = async (bookingId: string, action: string, notes?: string) => {
     setActionLoading(true)
     try {
-      const token = localStorage.getItem('token')
+      const token = localStorage.getItem('accessToken')
       if (!token) return
 
       let endpoint = ''
       let method = 'PATCH'
+      let body: any = {}
 
       switch (action) {
         case 'approve':
           endpoint = `http://localhost:3001/api/counsellor/extended/bookings/${bookingId}/approve`
+          body = { notes }
           break
         case 'reject':
           endpoint = `http://localhost:3001/api/counsellor/extended/bookings/${bookingId}/reject`
+          body = { reason: notes || 'No reason provided' }
           break
         case 'complete':
           endpoint = `http://localhost:3001/api/counsellor/extended/bookings/${bookingId}/complete`
+          body = { sessionSummary: notes }
           break
         case 'no-show':
           endpoint = `http://localhost:3001/api/counsellor/extended/bookings/${bookingId}/no-show`
+          body = { reason: notes || 'No show' }
           break
         case 'reschedule':
           endpoint = `http://localhost:3001/api/counsellor/extended/bookings/${bookingId}/reschedule`
+          // For reschedule, we need more data - this would typically be handled by a separate modal
+          body = { reason: notes || 'Rescheduled by counsellor' }
           break
         default:
           return
@@ -131,15 +141,21 @@ const CounsellorBookings = () => {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ notes })
+        body: JSON.stringify(body)
       })
 
       if (response.ok) {
+        const result = await response.json()
+        console.log(`Booking ${action} successful:`, result.message)
         await fetchBookings() // Refresh bookings
         setShowModal(false)
         setSelectedBooking(null)
+        // Show success message
+        alert(`Booking ${action}d successfully!`)
       } else {
-        console.error(`Failed to ${action} booking`)
+        const errorText = await response.text()
+        console.error(`Failed to ${action} booking:`, errorText)
+        alert(`Failed to ${action} booking: ${errorText}`)
       }
     } catch (error) {
       console.error(`Error ${action} booking:`, error)
@@ -455,18 +471,42 @@ const CounsellorBookings = () => {
                   >
                     Cancel
                   </button>
-                  <button
-                    onClick={() => {
-                      const notes = (document.getElementById('bookingNotes') as HTMLTextAreaElement)?.value
-                      // Determine action based on current status
-                      const action = selectedBooking.status === 'pending' ? 'approve' : 'complete'
-                      handleBookingAction(selectedBooking.id, action, notes)
-                    }}
-                    disabled={actionLoading}
-                    className="px-4 py-2 text-sm font-medium text-white bg-primary-600 rounded-md hover:bg-primary-700 disabled:opacity-50"
-                  >
-                    {actionLoading ? 'Processing...' : 'Confirm'}
-                  </button>
+                  {selectedBooking.status === 'pending' && (
+                    <>
+                      <button
+                        onClick={() => {
+                          const notes = (document.getElementById('bookingNotes') as HTMLTextAreaElement)?.value
+                          handleBookingAction(selectedBooking._id, 'approve', notes)
+                        }}
+                        disabled={actionLoading}
+                        className="px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-md hover:bg-green-700 disabled:opacity-50"
+                      >
+                        {actionLoading ? 'Processing...' : 'Approve'}
+                      </button>
+                      <button
+                        onClick={() => {
+                          const notes = (document.getElementById('bookingNotes') as HTMLTextAreaElement)?.value
+                          handleBookingAction(selectedBooking._id, 'reject', notes)
+                        }}
+                        disabled={actionLoading}
+                        className="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-md hover:bg-red-700 disabled:opacity-50"
+                      >
+                        {actionLoading ? 'Processing...' : 'Reject'}
+                      </button>
+                    </>
+                  )}
+                  {selectedBooking.status === 'confirmed' && (
+                    <button
+                      onClick={() => {
+                        const notes = (document.getElementById('bookingNotes') as HTMLTextAreaElement)?.value
+                        handleBookingAction(selectedBooking._id, 'complete', notes)
+                      }}
+                      disabled={actionLoading}
+                      className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 disabled:opacity-50"
+                    >
+                      {actionLoading ? 'Processing...' : 'Complete'}
+                    </button>
+                  )}
                 </div>
               </div>
             </div>

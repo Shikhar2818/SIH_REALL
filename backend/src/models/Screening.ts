@@ -2,7 +2,7 @@ import mongoose, { Document, Schema } from 'mongoose';
 
 export interface IScreening extends Document {
   userId: mongoose.Types.ObjectId;
-  type: 'PHQ9' | 'GAD7';
+  type: 'PHQ9' | 'GAD7' | 'PSS10' | 'DASS21';
   responses: {
     questionId: string;
     score: number;
@@ -22,7 +22,7 @@ const ScreeningSchema = new Schema<IScreening>(
     },
     type: {
       type: String,
-      enum: ['PHQ9', 'GAD7'],
+      enum: ['PHQ9', 'GAD7', 'PSS10', 'DASS21'],
       required: true,
     },
     responses: [{
@@ -33,7 +33,7 @@ const ScreeningSchema = new Schema<IScreening>(
       score: {
         type: Number,
         min: 0,
-        max: 3,
+        max: 4,
         required: true,
       },
     }],

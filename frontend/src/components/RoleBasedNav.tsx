@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { 
@@ -13,16 +13,35 @@ import {
   MessageCircle,
   BarChart3,
   Users,
-  Settings
+  Settings,
+  Youtube,
+  ChevronDown,
+  Shield
 } from 'lucide-react'
 import { useAuth } from '../contexts/AuthContext'
 import { useLanguage } from '../contexts/LanguageContext'
 
 const RoleBasedNav = () => {
   const [isOpen, setIsOpen] = useState(false)
+  const [adminDropdownOpen, setAdminDropdownOpen] = useState(false)
   const { user, logout } = useAuth()
   const { t, language, setLanguage } = useLanguage()
   const location = useLocation()
+  const dropdownRef = useRef<HTMLDivElement>(null)
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setAdminDropdownOpen(false)
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [])
 
   const getNavItems = () => {
     if (!user) {
@@ -35,6 +54,7 @@ const RoleBasedNav = () => {
     const baseItems = [
       { path: '/', label: t('nav.home'), icon: Home },
       { path: '/resources', label: t('nav.resources'), icon: BookOpen },
+      { path: '/peer-community', label: 'Peer Community', icon: Users },
     ]
 
     switch (user.role) {
@@ -44,7 +64,6 @@ const RoleBasedNav = () => {
           { path: '/dashboard', label: t('nav.dashboard'), icon: Home },
           { path: '/bookings', label: t('nav.bookings'), icon: Calendar },
           { path: '/screening', label: t('nav.screening'), icon: Heart },
-          { path: '/peer-community', label: 'Peer Community', icon: Users },
         ]
       
       case 'counsellor':
@@ -58,9 +77,17 @@ const RoleBasedNav = () => {
       case 'admin':
         return [
           ...baseItems,
-          { path: '/admin', label: t('nav.admin'), icon: BarChart3 },
-          { path: '/admin/users', label: 'Manage Users', icon: Users },
-          { path: '/admin/analytics', label: 'Analytics', icon: BarChart3 },
+          { path: '/admin', label: 'Dashboard', icon: BarChart3 },
+          { 
+            type: 'dropdown',
+            label: 'Admin Tools',
+            icon: Shield,
+            items: [
+              { path: '/admin/users', label: 'Manage Users', icon: Users },
+              { path: '/admin/videos', label: 'Video Manager', icon: Youtube },
+              { path: '/admin/analytics', label: 'Analytics', icon: BarChart3 },
+            ]
+          },
         ]
       
       default:
@@ -77,29 +104,138 @@ const RoleBasedNav = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
-          <Link to="/" className="flex items-center space-x-2">
+          <Link to="/" className="flex items-center space-x-2 flex-shrink-0">
             <div className="w-8 h-8 bg-primary-600 rounded-lg flex items-center justify-center">
               <span className="text-white font-bold text-sm">PI</span>
             </div>
-            <span className="font-semibold text-gray-900">Psychological Intervention</span>
+            <span className="font-semibold text-gray-900 hidden sm:inline">
+              <span className="hidden lg:inline">Psychological Intervention</span>
+              <span className="lg:hidden">PI Platform</span>
+            </span>
           </Link>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center space-x-8">
-            {navItems.map((item) => (
-              <Link
-                key={item.path}
-                to={item.path}
-                className={`px-3 py-2 rounded-md text-sm font-medium transition-colors flex items-center space-x-2 ${
-                  isActive(item.path)
-                    ? 'text-primary-600 bg-primary-50'
-                    : 'text-gray-700 hover:text-primary-600 hover:bg-gray-50'
-                }`}
-              >
-                <item.icon className="w-4 h-4" />
-                <span>{item.label}</span>
-              </Link>
+          <div className="hidden lg:flex items-center space-x-6">
+            {navItems.map((item, index) => (
+              item.type === 'dropdown' ? (
+                <div key={index} className="relative" ref={dropdownRef}>
+                  <button
+                    onClick={() => setAdminDropdownOpen(!adminDropdownOpen)}
+                    className={`px-3 py-2 rounded-md text-sm font-medium transition-all duration-200 flex items-center space-x-2 whitespace-nowrap ${
+                      adminDropdownOpen
+                        ? 'text-primary-600 bg-primary-50 shadow-sm'
+                        : 'text-gray-700 hover:text-primary-600 hover:bg-gray-50'
+                    }`}
+                  >
+                    <item.icon className="w-4 h-4 flex-shrink-0" />
+                    <span className="truncate">{item.label}</span>
+                    <ChevronDown className={`w-3 h-3 transition-transform ${adminDropdownOpen ? 'rotate-180' : ''}`} />
+                  </button>
+                  
+                  {adminDropdownOpen && (
+                    <motion.div
+                      initial={{ opacity: 0, y: -10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -10 }}
+                      className="absolute top-full left-0 mt-1 w-48 bg-white rounded-md shadow-lg border border-gray-200 z-50"
+                    >
+                      {item.items.map((subItem) => (
+                        <Link
+                          key={subItem.path}
+                          to={subItem.path}
+                          onClick={() => setAdminDropdownOpen(false)}
+                          className={`flex items-center space-x-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-primary-600 transition-colors ${
+                            isActive(subItem.path) ? 'bg-primary-50 text-primary-600' : ''
+                          }`}
+                        >
+                          <subItem.icon className="w-4 h-4" />
+                          <span>{subItem.label}</span>
+                        </Link>
+                      ))}
+                    </motion.div>
+                  )}
+                </div>
+              ) : (
+                <Link
+                  key={item.path}
+                  to={item.path}
+                  className={`px-3 py-2 rounded-md text-sm font-medium transition-all duration-200 flex items-center space-x-2 whitespace-nowrap ${
+                    isActive(item.path)
+                      ? 'text-primary-600 bg-primary-50 shadow-sm'
+                      : 'text-gray-700 hover:text-primary-600 hover:bg-gray-50'
+                  }`}
+                >
+                  <item.icon className="w-4 h-4 flex-shrink-0" />
+                  <span className="truncate">{item.label}</span>
+                </Link>
+              )
             ))}
+          </div>
+
+          {/* Tablet Navigation (medium screens) */}
+          <div className="hidden md:flex lg:hidden items-center space-x-4">
+            {navItems.slice(0, 3).map((item, index) => (
+              item.type === 'dropdown' ? (
+                <div key={index} className="relative" ref={dropdownRef}>
+                  <button
+                    onClick={() => setAdminDropdownOpen(!adminDropdownOpen)}
+                    className={`px-2 py-2 rounded-md text-sm font-medium transition-all duration-200 flex items-center space-x-1 ${
+                      adminDropdownOpen
+                        ? 'text-primary-600 bg-primary-50 shadow-sm'
+                        : 'text-gray-700 hover:text-primary-600 hover:bg-gray-50'
+                    }`}
+                  >
+                    <item.icon className="w-4 h-4" />
+                    <span className="hidden sm:inline truncate">{item.label}</span>
+                    <ChevronDown className={`w-3 h-3 transition-transform ${adminDropdownOpen ? 'rotate-180' : ''}`} />
+                  </button>
+                  
+                  {adminDropdownOpen && (
+                    <motion.div
+                      initial={{ opacity: 0, y: -10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -10 }}
+                      className="absolute top-full left-0 mt-1 w-48 bg-white rounded-md shadow-lg border border-gray-200 z-50"
+                    >
+                      {item.items.map((subItem) => (
+                        <Link
+                          key={subItem.path}
+                          to={subItem.path}
+                          onClick={() => setAdminDropdownOpen(false)}
+                          className={`flex items-center space-x-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-primary-600 transition-colors ${
+                            isActive(subItem.path) ? 'bg-primary-50 text-primary-600' : ''
+                          }`}
+                        >
+                          <subItem.icon className="w-4 h-4" />
+                          <span>{subItem.label}</span>
+                        </Link>
+                      ))}
+                    </motion.div>
+                  )}
+                </div>
+              ) : (
+                <Link
+                  key={item.path}
+                  to={item.path}
+                  className={`px-2 py-2 rounded-md text-sm font-medium transition-all duration-200 flex items-center space-x-1 ${
+                    isActive(item.path)
+                      ? 'text-primary-600 bg-primary-50 shadow-sm'
+                      : 'text-gray-700 hover:text-primary-600 hover:bg-gray-50'
+                  }`}
+                >
+                  <item.icon className="w-4 h-4" />
+                  <span className="hidden sm:inline truncate">{item.label}</span>
+                </Link>
+              )
+            ))}
+            {navItems.length > 3 && (
+              <button
+                onClick={() => setIsOpen(!isOpen)}
+                className="p-2 rounded-md text-gray-700 hover:text-primary-600 hover:bg-gray-50"
+              >
+                <Menu className="w-4 h-4" />
+              </button>
+            )}
           </div>
 
           {/* Right side */}
@@ -152,10 +288,11 @@ const RoleBasedNav = () => {
           </div>
 
           {/* Mobile menu button */}
-          <div className="md:hidden">
+          <div className="md:hidden flex items-center space-x-2">
             <button
               onClick={() => setIsOpen(!isOpen)}
-              className="p-2 rounded-md text-gray-700 hover:text-primary-600 hover:bg-gray-50"
+              className="p-2 rounded-md text-gray-700 hover:text-primary-600 hover:bg-gray-50 transition-colors"
+              aria-label="Toggle mobile menu"
             >
               {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
             </button>
@@ -172,20 +309,46 @@ const RoleBasedNav = () => {
               className="md:hidden border-t border-gray-200"
             >
               <div className="px-2 pt-2 pb-3 space-y-1">
-                {navItems.map((item) => (
-                  <Link
-                    key={item.path}
-                    to={item.path}
-                    onClick={() => setIsOpen(false)}
-                    className={`flex items-center space-x-2 block px-3 py-2 rounded-md text-base font-medium transition-colors ${
-                      isActive(item.path)
-                        ? 'text-primary-600 bg-primary-50'
-                        : 'text-gray-700 hover:text-primary-600 hover:bg-gray-50'
-                    }`}
-                  >
-                    <item.icon className="w-5 h-5" />
-                    <span>{item.label}</span>
-                  </Link>
+                {navItems.map((item, index) => (
+                  item.type === 'dropdown' ? (
+                    <div key={index}>
+                      <div className="flex items-center space-x-2 px-3 py-2 text-base font-medium text-gray-700">
+                        <item.icon className="w-5 h-5" />
+                        <span>{item.label}</span>
+                      </div>
+                      <div className="ml-6 space-y-1">
+                        {item.items.map((subItem) => (
+                          <Link
+                            key={subItem.path}
+                            to={subItem.path}
+                            onClick={() => setIsOpen(false)}
+                            className={`flex items-center space-x-2 block px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                              isActive(subItem.path)
+                                ? 'text-primary-600 bg-primary-50'
+                                : 'text-gray-600 hover:text-primary-600 hover:bg-gray-50'
+                            }`}
+                          >
+                            <subItem.icon className="w-4 h-4" />
+                            <span>{subItem.label}</span>
+                          </Link>
+                        ))}
+                      </div>
+                    </div>
+                  ) : (
+                    <Link
+                      key={item.path}
+                      to={item.path}
+                      onClick={() => setIsOpen(false)}
+                      className={`flex items-center space-x-2 block px-3 py-2 rounded-md text-base font-medium transition-colors ${
+                        isActive(item.path)
+                          ? 'text-primary-600 bg-primary-50'
+                          : 'text-gray-700 hover:text-primary-600 hover:bg-gray-50'
+                      }`}
+                    >
+                      <item.icon className="w-5 h-5" />
+                      <span>{item.label}</span>
+                    </Link>
+                  )
                 ))}
 
                 {/* Mobile Language Selector */}

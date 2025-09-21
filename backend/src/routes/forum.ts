@@ -66,7 +66,6 @@ router.get('/posts/:id', async (req, res) => {
 // Create new forum post
 router.post('/posts', [
   authenticateToken,
-  requireStudent,
   body('title').trim().isLength({ min: 5, max: 200 }).withMessage('Title must be 5-200 characters'),
   body('content').trim().isLength({ min: 10, max: 2000 }).withMessage('Content must be 10-2000 characters'),
   body('category').isIn(['general', 'anxiety', 'depression', 'stress', 'support', 'achievement']).withMessage('Invalid category'),
@@ -75,9 +74,14 @@ router.post('/posts', [
   body('mood').optional().isIn(['happy', 'sad', 'anxious', 'stressed', 'calm', 'overwhelmed']).withMessage('Invalid mood'),
 ], async (req: AuthRequest, res) => {
   try {
+    console.log('Forum post creation request:', req.body);
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
+      console.log('Forum post validation errors:', errors.array());
+      return res.status(400).json({ 
+        error: 'Validation failed',
+        details: errors.array() 
+      });
     }
 
     const { title, content, category, tags, isAnonymous, mood } = req.body;
@@ -151,7 +155,6 @@ router.post('/posts/:id/like', authenticateToken, async (req: AuthRequest, res) 
 // Add comment to post
 router.post('/posts/:id/comments', [
   authenticateToken,
-  requireStudent,
   body('content').trim().isLength({ min: 1, max: 500 }).withMessage('Comment must be 1-500 characters'),
 ], async (req: AuthRequest, res) => {
   try {

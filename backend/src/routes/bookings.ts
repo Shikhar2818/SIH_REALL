@@ -1,7 +1,6 @@
 import express from 'express';
 import { body, validationResult } from 'express-validator';
 import Booking from '../models/Booking';
-import User from '../models/User';
 import Counsellor from '../models/Counsellor';
 import { sendBookingNotification } from '../utils/email';
 import { authenticateToken, AuthRequest } from '../middleware/auth';
@@ -37,11 +36,8 @@ router.post('/', [
       return res.status(400).json({ error: 'Booking must be in the future' });
     }
 
-    // Check if counsellor exists and is a counsellor user
-    const counsellor = await User.findOne({ 
-      _id: counsellorId, 
-      role: 'counsellor' 
-    });
+    // Check if counsellor exists
+    const counsellor = await Counsellor.findById(counsellorId);
     if (!counsellor) {
       return res.status(404).json({ error: 'Counsellor not found' });
     }

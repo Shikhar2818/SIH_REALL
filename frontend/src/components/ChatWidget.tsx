@@ -135,7 +135,14 @@ const ChatWidget = () => {
               {messages.length === 0 && (
                 <div className="text-center text-gray-500 text-sm">
                   <Bot className="w-8 h-8 mx-auto mb-2 text-gray-400" />
-                  <p>Hi! I'm here to help. How can I assist you today?</p>
+                  <p className="mb-2">Hi! I'm here to help. How can I assist you today?</p>
+                  <div className="text-xs text-gray-400 space-y-1">
+                    <p>💡 Try asking about:</p>
+                    <p>• "How do I book an appointment?"</p>
+                    <p>• "Where are the Hindi resources?"</p>
+                    <p>• "Tell me about mental health screenings"</p>
+                    <p>• "How does the peer community work?"</p>
+                  </div>
                 </div>
               )}
               

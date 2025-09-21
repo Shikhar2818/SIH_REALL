@@ -52,7 +52,7 @@ const CounsellorProfile = () => {
 
   const fetchProfile = async () => {
     try {
-      const token = localStorage.getItem('token')
+      const token = localStorage.getItem('accessToken')
       if (!token) return
 
       // Fetch counsellor profile data
@@ -89,7 +89,7 @@ const CounsellorProfile = () => {
   const handleSave = async () => {
     setSaving(true)
     try {
-      const token = localStorage.getItem('token')
+      const token = localStorage.getItem('accessToken')
       if (!token) return
 
       const response = await fetch('http://localhost:3001/api/counsellor/profile', {

@@ -18,23 +18,10 @@ export const authenticateToken = async (
 ): Promise<void> => {
   try {
     const authHeader = req.headers.authorization;
-    
-    if (!authHeader) {
-      res.status(401).json({ error: 'Authorization header required' });
-      return;
-    }
-
-    const token = authHeader.split(' ')[1];
+    const token = authHeader && authHeader.split(' ')[1];
 
     if (!token) {
       res.status(401).json({ error: 'Access token required' });
-      return;
-    }
-
-    // Validate token format
-    if (!token.match(/^[A-Za-z0-9-_]+\.[A-Za-z0-9-_]+\.[A-Za-z0-9-_]*$/)) {
-      console.error('Malformed JWT token:', token.substring(0, 20) + '...');
-      res.status(401).json({ error: 'Invalid token format', code: 'MALFORMED_TOKEN' });
       return;
     }
 
@@ -60,21 +47,13 @@ export const authenticateToken = async (
     
     // Handle specific JWT errors
     if (error instanceof jwt.TokenExpiredError) {
-      console.error('Token expired for request:', req.path);
       res.status(401).json({ error: 'Token expired', code: 'TOKEN_EXPIRED' });
       return;
     } else if (error instanceof jwt.JsonWebTokenError) {
-      console.error('JWT error:', error.message, 'for request:', req.path);
-      console.error('Token received:', req.headers.authorization?.substring(0, 50) + '...');
-      res.status(401).json({ error: 'Invalid token', code: 'INVALID_TOKEN', details: error.message });
-      return;
-    } else if (error instanceof jwt.NotBeforeError) {
-      console.error('Token not active yet:', error.message);
-      res.status(401).json({ error: 'Token not active', code: 'TOKEN_NOT_ACTIVE' });
+      res.status(403).json({ error: 'Invalid token', code: 'INVALID_TOKEN' });
       return;
     }
     
-    console.error('Unexpected auth error:', error);
     res.status(403).json({ error: 'Authentication failed' });
   }
 };

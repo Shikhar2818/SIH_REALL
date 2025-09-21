@@ -66,8 +66,11 @@ const CounsellorDashboard = () => {
 
   const fetchDashboardData = async () => {
     try {
-      const token = localStorage.getItem('token')
-      if (!token) return
+      const token = localStorage.getItem('accessToken')
+      if (!token) {
+        console.error('No authentication token found')
+        return
+      }
 
       // Fetch dashboard summary
       const statsResponse = await fetch('http://localhost:3001/api/counsellor/extended/dashboard-summary', {
@@ -79,20 +82,25 @@ const CounsellorDashboard = () => {
 
       if (statsResponse.ok) {
         const statsData = await statsResponse.json()
-        setStats(statsData)
-      }
-
-      // Fetch upcoming sessions
-      const sessionsResponse = await fetch('http://localhost:3001/api/counsellor/extended/upcoming-sessions', {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
+        
+        setStats({
+          totalStudents: statsData.summary?.totalStudents || 0,
+          upcomingSessions: statsData.summary?.upcomingSessions || 0,
+          completedSessions: statsData.recentSessions?.length || 0,
+          averageRating: 0, // Will be implemented later
+          pendingBookings: statsData.summary?.pendingApprovals || 0,
+          thisWeekSessions: statsData.summary?.upcomingSessions || 0,
+          monthlySessions: statsData.summary?.upcomingSessions || 0,
+          cancelledSessions: 0, // Will be calculated later
+          noShowCount: 0 // Will be calculated later
+        })
+        
+        // Set upcoming sessions from the dashboard data
+        if (statsData.upcomingBookings) {
+          setUpcomingSessions(statsData.upcomingBookings.slice(0, 5))
         }
-      })
-
-      if (sessionsResponse.ok) {
-        const sessionsData = await sessionsResponse.json()
-        setUpcomingSessions(sessionsData.slice(0, 5)) // Show only next 5 sessions
+      } else {
+        console.error('Failed to fetch dashboard data:', statsResponse.status)
       }
 
       // Fetch recent activity (mock data for now)

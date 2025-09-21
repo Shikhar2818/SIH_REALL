@@ -163,6 +163,66 @@ router.get('/questions/:type', (req, res) => {
         { value: 3, label: 'Nearly every day' },
       ],
     });
+  } else if (type === 'PSS10') {
+    res.json({
+      type: 'PSS10',
+      title: 'Perceived Stress Scale-10 (PSS-10)',
+      description: 'The questions in this scale ask you about your feelings and thoughts during the last month.',
+      questions: [
+        { id: 'pss10_1', text: 'In the last month, how often have you been upset because of something that happened unexpectedly?' },
+        { id: 'pss10_2', text: 'In the last month, how often have you felt that you were unable to control the important things in your life?' },
+        { id: 'pss10_3', text: 'In the last month, how often have you felt nervous and stressed?' },
+        { id: 'pss10_4', text: 'In the last month, how often have you felt confident about your ability to handle your personal problems?' },
+        { id: 'pss10_5', text: 'In the last month, how often have you felt that things were going your way?' },
+        { id: 'pss10_6', text: 'In the last month, how often have you found that you could not cope with all the things that you had to do?' },
+        { id: 'pss10_7', text: 'In the last month, how often have you been able to control irritations in your life?' },
+        { id: 'pss10_8', text: 'In the last month, how often have you felt that you were on top of things?' },
+        { id: 'pss10_9', text: 'In the last month, how often have you been angered because of things that were outside of your control?' },
+        { id: 'pss10_10', text: 'In the last month, how often have you felt difficulties were piling up so high that you could not overcome them?' }
+      ],
+      options: [
+        { value: 0, label: 'Never' },
+        { value: 1, label: 'Almost Never' },
+        { value: 2, label: 'Sometimes' },
+        { value: 3, label: 'Fairly Often' },
+        { value: 4, label: 'Very Often' },
+      ],
+    });
+  } else if (type === 'DASS21') {
+    res.json({
+      type: 'DASS21',
+      title: 'Depression, Anxiety, Stress Scale-21 (DASS-21)',
+      description: 'Please read each statement and circle a number 0, 1, 2 or 3 which indicates how much the statement applied to you over the past week.',
+      questions: [
+        { id: 'dass21_1', text: 'I found it hard to wind down' },
+        { id: 'dass21_2', text: 'I was aware of dryness of my mouth' },
+        { id: 'dass21_3', text: 'I couldnt seem to experience any positive feeling at all' },
+        { id: 'dass21_4', text: 'I experienced breathing difficulty (e.g., excessively rapid breathing, breathlessness in the absence of physical exertion)' },
+        { id: 'dass21_5', text: 'I found it difficult to work up the initiative to do things' },
+        { id: 'dass21_6', text: 'I tended to over-react to situations' },
+        { id: 'dass21_7', text: 'I experienced trembling (e.g., in the hands)' },
+        { id: 'dass21_8', text: 'I felt that I was using a lot of nervous energy' },
+        { id: 'dass21_9', text: 'I was worried about situations in which I might panic and make a fool of myself' },
+        { id: 'dass21_10', text: 'I felt that I had nothing to look forward to' },
+        { id: 'dass21_11', text: 'I found myself getting agitated' },
+        { id: 'dass21_12', text: 'I found it difficult to relax' },
+        { id: 'dass21_13', text: 'I felt down-hearted and blue' },
+        { id: 'dass21_14', text: 'I was intolerant of anything that kept me from getting on with what I was doing' },
+        { id: 'dass21_15', text: 'I felt I was close to panic' },
+        { id: 'dass21_16', text: 'I was unable to become enthusiastic about anything' },
+        { id: 'dass21_17', text: 'I felt I wasnt worth much as a person' },
+        { id: 'dass21_18', text: 'I felt that I was rather touchy' },
+        { id: 'dass21_19', text: 'I was aware of the action of my heart in the absence of physical exertion (e.g., sense of heart rate increase, heart missing a beat)' },
+        { id: 'dass21_20', text: 'I felt scared without any good reason' },
+        { id: 'dass21_21', text: 'I felt that life was meaningless' }
+      ],
+      options: [
+        { value: 0, label: 'Did not apply to me at all' },
+        { value: 1, label: 'Applied to me to some degree, or some of the time' },
+        { value: 2, label: 'Applied to me to a considerable degree, or a good part of the time' },
+        { value: 3, label: 'Applied to me very much, or most of the time' },
+      ],
+    });
   } else {
     res.status(400).json({ error: 'Invalid screening type' });
   }

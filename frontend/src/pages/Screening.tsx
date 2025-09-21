@@ -41,12 +41,14 @@ const Screening = () => {
 
   const fetchScreenings = async () => {
     try {
-      const [phq9Response, gad7Response] = await Promise.all([
+      const [phq9Response, gad7Response, pss10Response, dass21Response] = await Promise.all([
         api.get('/screenings/questions/PHQ9'),
         api.get('/screenings/questions/GAD7'),
+        api.get('/screenings/questions/PSS10'),
+        api.get('/screenings/questions/DASS21'),
       ])
       
-      setScreenings([phq9Response.data, gad7Response.data])
+      setScreenings([phq9Response.data, gad7Response.data, pss10Response.data, dass21Response.data])
     } catch (error) {
       toast.error('Failed to fetch screening questions')
     }

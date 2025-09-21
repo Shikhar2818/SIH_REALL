@@ -4,7 +4,7 @@ export interface IResource extends Document {
   title: string;
   description: string;
   content: string;
-  category: 'article' | 'video' | 'document' | 'link' | 'exercise' | 'guide';
+  category: 'article' | 'video' | 'audio' | 'document' | 'link' | 'exercise' | 'guide';
   tags: string[];
   authorId: mongoose.Types.ObjectId;
   isPublished: boolean;
@@ -13,6 +13,10 @@ export interface IResource extends Document {
   downloadCount: number;
   fileUrl?: string;
   thumbnailUrl?: string;
+  // YouTube specific fields
+  youtubeId?: string;
+  youtubeUrl?: string;
+  duration?: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -37,7 +41,7 @@ const ResourceSchema = new Schema<IResource>(
     },
     category: {
       type: String,
-      enum: ['article', 'video', 'document', 'link', 'exercise', 'guide'],
+      enum: ['article', 'video', 'audio', 'document', 'link', 'exercise', 'guide'],
       required: true,
     },
     tags: [{
@@ -70,6 +74,19 @@ const ResourceSchema = new Schema<IResource>(
     },
     thumbnailUrl: {
       type: String,
+    },
+    // YouTube specific fields
+    youtubeId: {
+      type: String,
+      trim: true,
+    },
+    youtubeUrl: {
+      type: String,
+      trim: true,
+    },
+    duration: {
+      type: String,
+      trim: true,
     },
   },
   {

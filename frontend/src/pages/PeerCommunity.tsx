@@ -44,6 +44,8 @@ const PeerCommunity = () => {
   const [selectedCategory, setSelectedCategory] = useState('all')
   const [selectedMood, setSelectedMood] = useState('all')
   const [searchTerm, setSearchTerm] = useState('')
+  const [expandedComments, setExpandedComments] = useState<Set<string>>(new Set())
+  const [newComments, setNewComments] = useState<Record<string, string>>({})
 
   // Form state
   const [formData, setFormData] = useState({
@@ -86,7 +88,7 @@ const PeerCommunity = () => {
       if (selectedCategory !== 'all') params.append('category', selectedCategory)
       if (selectedMood !== 'all') params.append('mood', selectedMood)
       
-      const response = await api.get(`/forum/posts?${params.toString()}`)
+      const response = await api.get(`/forum/posts?${params.toString()}&limit=100`)
       setPosts(response.data.posts)
     } catch (error) {
       console.error('Failed to fetch posts:', error)
@@ -100,8 +102,12 @@ const PeerCommunity = () => {
     e.preventDefault()
     try {
       const postData = {
-        ...formData,
+        title: formData.title,
+        content: formData.content,
+        category: formData.category,
         tags: formData.tags.split(',').map(tag => tag.trim()).filter(tag => tag),
+        isAnonymous: formData.isAnonymous,
+        ...(formData.mood && { mood: formData.mood }), // Only include mood if it's not empty
       }
 
       await api.post('/forum/posts', postData)
@@ -129,6 +135,51 @@ const PeerCommunity = () => {
     } catch (error) {
       console.error('Failed to like post:', error)
       toast.error('Failed to like post')
+    }
+  }
+
+  const handleToggleComments = (postId: string) => {
+    const newExpanded = new Set(expandedComments)
+    if (newExpanded.has(postId)) {
+      newExpanded.delete(postId)
+    } else {
+      newExpanded.add(postId)
+    }
+    setExpandedComments(newExpanded)
+  }
+
+  const handleCommentChange = (postId: string, content: string) => {
+    setNewComments(prev => ({
+      ...prev,
+      [postId]: content
+    }))
+  }
+
+  const handleSubmitComment = async (postId: string) => {
+    const commentContent = newComments[postId]
+    if (!commentContent?.trim()) {
+      toast.error('Please enter a comment')
+      return
+    }
+
+    try {
+      await api.post(`/forum/posts/${postId}/comments`, {
+        content: commentContent.trim()
+      })
+      
+      // Clear the comment input
+      setNewComments(prev => {
+        const updated = { ...prev }
+        delete updated[postId]
+        return updated
+      })
+      
+      // Refresh posts to get updated comments
+      fetchPosts()
+      toast.success('Comment added successfully')
+    } catch (error) {
+      console.error('Failed to add comment:', error)
+      toast.error('Failed to add comment')
     }
   }
 
@@ -323,12 +374,71 @@ const PeerCommunity = () => {
                       <Heart className="w-4 h-4" />
                       <span>{post.likes.length}</span>
                     </button>
-                    <div className="flex items-center space-x-1 text-gray-600">
+                    <button
+                      onClick={() => handleToggleComments(post._id)}
+                      className="flex items-center space-x-1 text-gray-600 hover:text-blue-600 transition-colors"
+                    >
                       <MessageCircle className="w-4 h-4" />
                       <span>{post.comments.length}</span>
-                    </div>
+                    </button>
                   </div>
                 </div>
+
+                {/* Comments Section */}
+                {expandedComments.has(post._id) && (
+                  <div className="mt-4 pt-4 border-t border-gray-100">
+                    {/* Existing Comments */}
+                    {post.comments.length > 0 ? (
+                      <div className="space-y-3 mb-4">
+                        {post.comments.map((comment: any, commentIndex: number) => (
+                          <div key={commentIndex} className="bg-gray-50 rounded-lg p-3">
+                            <div className="flex items-start space-x-2">
+                              <div className="w-8 h-8 bg-primary-100 rounded-full flex items-center justify-center">
+                                <User className="w-4 h-4 text-primary-600" />
+                              </div>
+                              <div className="flex-1">
+                                <div className="flex items-center space-x-2 mb-1">
+                                  <span className="text-sm font-medium text-gray-900">
+                                    {comment.authorId?.name || 'Anonymous'}
+                                  </span>
+                                  <span className="text-xs text-gray-500">
+                                    {formatDateTime(comment.createdAt)}
+                                  </span>
+                                </div>
+                                <p className="text-sm text-gray-700">{comment.content}</p>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <p className="text-gray-500 text-sm mb-4">No comments yet. Be the first to comment!</p>
+                    )}
+
+                    {/* Add Comment Form */}
+                    {user && (
+                      <div className="border-t border-gray-200 pt-4">
+                        <div className="flex space-x-2">
+                          <input
+                            type="text"
+                            placeholder="Write a comment..."
+                            value={newComments[post._id] || ''}
+                            onChange={(e) => handleCommentChange(post._id, e.target.value)}
+                            className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent text-sm"
+                            maxLength={500}
+                          />
+                          <button
+                            onClick={() => handleSubmitComment(post._id)}
+                            disabled={!newComments[post._id]?.trim()}
+                            className="px-4 py-2 bg-primary-600 text-white rounded-md hover:bg-primary-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors text-sm"
+                          >
+                            Post
+                          </button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
               </motion.div>
             ))
           )}

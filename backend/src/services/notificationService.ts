@@ -40,7 +40,7 @@ export class NotificationService {
   }
 
   // Create booking notification for counsellor or student
-  static async createBookingNotification(bookingId: string, counsellorId: string, studentId: string, action: 'booked' | 'cancelled' | 'rescheduled' | 'confirmed' | 'approved') {
+  static async createBookingNotification(bookingId: string, counsellorId: string, studentId: string, action: 'booked' | 'cancelled' | 'rescheduled' | 'confirmed' | 'approved' | 'completed' | 'no_show') {
     try {
       const [student, counsellor] = await Promise.all([
         User.findById(studentId).select('name email'),
@@ -55,6 +55,8 @@ export class NotificationService {
         'rescheduled': `Session rescheduled by ${student.name}`,
         'confirmed': `Session confirmed by ${counsellor.name}`,
         'approved': `Session approved by ${counsellor.name}`,
+        'completed': `Session completed by ${counsellor.name}`,
+        'no_show': `Session marked as no-show by ${counsellor.name}`,
       };
 
       const notificationTypes = {
@@ -63,6 +65,8 @@ export class NotificationService {
         'rescheduled': 'reschedule' as const,
         'confirmed': 'booking' as const,
         'approved': 'booking' as const,
+        'completed': 'booking' as const,
+        'no_show': 'cancellation' as const,
       };
 
       // Create notification for counsellor when student books/cancels/reschedules
@@ -83,8 +87,8 @@ export class NotificationService {
         });
       }
 
-      // Create notification for student when counsellor confirms/approves
-      if (['confirmed', 'approved'].includes(action)) {
+      // Create notification for student when counsellor confirms/approves/completes/marks no-show
+      if (['confirmed', 'approved', 'completed', 'no_show'].includes(action)) {
         await Notification.create({
           recipientId: studentId,
           senderId: counsellorId,

@@ -1,56 +1,42 @@
 @echo off
-echo ========================================
-echo STOPPING PSYCHOLOGICAL INTERVENTION PLATFORM
-echo ========================================
+title Digital Psychological Intervention Platform - Stop Services
+color 0C
 
 echo.
-echo Step 1: Stopping Node.js processes...
-taskkill /f /im node.exe 2>nul
-if %errorlevel% equ 0 (
-    echo Node.js processes stopped successfully.
-) else (
-    echo No Node.js processes found.
-)
-
+echo ================================================================
+echo    Digital Psychological Intervention Platform - Stop Services
+echo ================================================================
 echo.
-echo Step 2: Stopping npm processes...
-taskkill /f /im npm.exe 2>nul
-if %errorlevel% equ 0 (
-    echo npm processes stopped successfully.
-) else (
-    echo No npm processes found.
-)
 
+echo Stopping all services...
 echo.
-echo Step 3: Stopping Docker services...
+
+echo [1/3] Stopping Docker containers...
 docker compose down
-if %errorlevel% equ 0 (
-    echo Docker services stopped successfully.
-) else (
-    echo Docker services were not running or failed to stop.
+if %errorlevel% neq 0 (
+    echo WARNING: Some Docker containers may not have stopped properly.
 )
 
 echo.
-echo Step 4: Checking for any remaining processes...
-tasklist /fi "imagename eq node.exe" 2>nul | find /i "node.exe" >nul
-if %errorlevel% equ 0 (
-    echo Warning: Some Node.js processes may still be running.
-    echo You may need to stop them manually.
-) else (
-    echo All Node.js processes have been stopped.
+echo [2/3] Stopping Node.js processes...
+taskkill /f /im node.exe >nul 2>&1
+if %errorlevel% neq 0 (
+    echo WARNING: Some Node.js processes may not have stopped properly.
 )
 
 echo.
-echo ========================================
-echo SERVICES STOPPED
-echo ========================================
+echo [3/3] Cleaning up...
+timeout /t 2 /nobreak >nul
+
 echo.
-echo All services have been stopped:
-echo - Backend server (Node.js)
-echo - Frontend server (Node.js)
-echo - MongoDB (Docker)
-echo - MailHog (Docker)
+echo ================================================================
+echo                    SERVICES STOPPED
+echo ================================================================
 echo.
-echo You can now run start-services.bat to start them again.
+echo ✓ All Docker containers stopped
+echo ✓ All Node.js processes stopped
+echo ✓ All services have been shut down
+echo.
+echo To start services again, run: start-services.bat
 echo.
 pause

@@ -2,6 +2,7 @@ import { Routes, Route } from 'react-router-dom'
 import { AuthProvider } from './contexts/AuthContext'
 import { LanguageProvider } from './contexts/LanguageContext'
 import ProtectedRoute from './components/ProtectedRoute'
+import RoleBasedRoute from './components/RoleBasedRoute'
 import Layout from './components/Layout'
 import Home from './pages/Home'
 import Login from './pages/Login'
@@ -10,7 +11,9 @@ import Bookings from './pages/Bookings'
 import Screening from './pages/Screening'
 import Resources from './pages/Resources'
 import AdminDashboard from './pages/AdminDashboard'
+import AdminAnalytics from './pages/AdminAnalytics'
 import UserManagement from './pages/UserManagement'
+import AdminVideoManager from './pages/AdminVideoManager'
 import StudentDashboard from './pages/StudentDashboard'
 import PeerCommunity from './pages/PeerCommunity'
 import SampleLogins from './pages/SampleLogins'
@@ -29,50 +32,60 @@ function App() {
             <Route path="login" element={<Login />} />
             <Route path="register" element={<Register />} />
             <Route path="dashboard" element={
-              <ProtectedRoute>
+              <RoleBasedRoute allowedRoles={['student']}>
                 <StudentDashboard />
-              </ProtectedRoute>
+              </RoleBasedRoute>
             } />
             <Route path="bookings" element={
-              <ProtectedRoute>
+              <RoleBasedRoute allowedRoles={['student']}>
                 <Bookings />
-              </ProtectedRoute>
+              </RoleBasedRoute>
             } />
             <Route path="screening" element={
-              <ProtectedRoute>
+              <RoleBasedRoute allowedRoles={['student']}>
                 <Screening />
-              </ProtectedRoute>
+              </RoleBasedRoute>
             } />
             <Route path="resources" element={<Resources />} />
             <Route path="admin" element={
-              <ProtectedRoute>
+              <RoleBasedRoute allowedRoles={['admin']}>
                 <AdminDashboard />
-              </ProtectedRoute>
+              </RoleBasedRoute>
             } />
             <Route path="admin/users" element={
-              <ProtectedRoute>
+              <RoleBasedRoute allowedRoles={['admin']}>
                 <UserManagement />
-              </ProtectedRoute>
+              </RoleBasedRoute>
+            } />
+            <Route path="admin/videos" element={
+              <RoleBasedRoute allowedRoles={['admin']}>
+                <AdminVideoManager />
+              </RoleBasedRoute>
+            } />
+            <Route path="admin/analytics" element={
+              <RoleBasedRoute allowedRoles={['admin']}>
+                <AdminAnalytics />
+              </RoleBasedRoute>
             } />
             <Route path="peer-community" element={
-              <ProtectedRoute>
+              <RoleBasedRoute allowedRoles={['student', 'counsellor', 'admin']}>
                 <PeerCommunity />
-              </ProtectedRoute>
+              </RoleBasedRoute>
             } />
             <Route path="counsellor-dashboard" element={
-              <ProtectedRoute>
+              <RoleBasedRoute allowedRoles={['counsellor']}>
                 <CounsellorDashboard />
-              </ProtectedRoute>
+              </RoleBasedRoute>
             } />
             <Route path="counsellor-profile" element={
-              <ProtectedRoute>
+              <RoleBasedRoute allowedRoles={['counsellor']}>
                 <CounsellorProfile />
-              </ProtectedRoute>
+              </RoleBasedRoute>
             } />
             <Route path="counsellor-bookings" element={
-              <ProtectedRoute>
+              <RoleBasedRoute allowedRoles={['counsellor']}>
                 <CounsellorBookings />
-              </ProtectedRoute>
+              </RoleBasedRoute>
             } />
             <Route path="sample-logins" element={<SampleLogins />} />
             <Route path="*" element={<NotFound />} />

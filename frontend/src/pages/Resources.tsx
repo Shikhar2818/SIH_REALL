@@ -8,8 +8,14 @@ import {
   Search, 
   Filter,
   Download,
-  ExternalLink
+  ExternalLink,
+  Youtube,
+  Volume2
 } from 'lucide-react'
+import YouTubeVideoCard from '../components/YouTubeVideoCard'
+import YouTubeAudioCard from '../components/YouTubeAudioCard'
+import api from '../utils/api'
+import toast from 'react-hot-toast'
 
 interface Resource {
   _id: string
@@ -23,8 +29,24 @@ interface Resource {
   createdAt: string
 }
 
+interface YouTubeVideo {
+  _id: string
+  title: string
+  description: string
+  youtubeId: string
+  youtubeUrl: string
+  thumbnailUrl?: string
+  duration?: string
+  tags: string[]
+  viewCount: number
+  featured?: boolean
+  createdAt: string
+}
+
 const Resources = () => {
   const [resources, setResources] = useState<Resource[]>([])
+  const [youtubeVideos, setYoutubeVideos] = useState<YouTubeVideo[]>([])
+  const [youtubeAudios, setYoutubeAudios] = useState<YouTubeVideo[]>([])
   const [filteredResources, setFilteredResources] = useState<Resource[]>([])
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedType, setSelectedType] = useState<string>('all')
@@ -39,9 +61,23 @@ const Resources = () => {
     filterResources()
   }, [resources, searchTerm, selectedType, selectedLanguage])
 
+  useEffect(() => {
+    // YouTube videos and audios filtering is handled in the render function
+  }, [youtubeVideos, youtubeAudios, searchTerm, selectedLanguage])
+
   const fetchResources = async () => {
     try {
-      // Mock data for now - in real app, this would be an API call
+      // Fetch YouTube videos
+      const videosResponse = await api.get('/resources?category=video')
+      console.log('YouTube videos response:', videosResponse.data)
+      setYoutubeVideos(videosResponse.data.resources || [])
+
+      // Fetch YouTube audios (same endpoint, but we'll filter by tags)
+      const audiosResponse = await api.get('/resources?category=audio')
+      console.log('YouTube audios response:', audiosResponse.data)
+      setYoutubeAudios(audiosResponse.data.resources || [])
+
+      // Mock data for other resources - in real app, this would be an API call
       const mockResources: Resource[] = [
         {
           _id: '1',
@@ -93,6 +129,10 @@ const Resources = () => {
       setIsLoading(false)
     } catch (error) {
       console.error('Failed to fetch resources:', error)
+      toast.error('Failed to load resources')
+      // Set empty arrays on error
+      setYoutubeVideos([])
+      setResources([])
       setIsLoading(false)
     }
   }
@@ -114,12 +154,56 @@ const Resources = () => {
       filtered = filtered.filter(resource => resource.type === selectedType)
     }
 
-    // Language filter
-    if (selectedLanguage !== 'all') {
+    // Language filter - only apply if we have regular resources with language field
+    if (selectedLanguage !== 'all' && resources.length > 0) {
       filtered = filtered.filter(resource => resource.language === selectedLanguage)
     }
 
     setFilteredResources(filtered)
+  }
+
+  const filterYouTubeVideos = () => {
+    let filtered = youtubeVideos
+
+    if (searchTerm) {
+      filtered = filtered.filter(video =>
+        video.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        video.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        video.tags.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()))
+      )
+    }
+
+    if (selectedLanguage !== 'all') {
+      filtered = filtered.filter(video => 
+        selectedLanguage === 'english' ? video.tags.includes('english') :
+        selectedLanguage === 'hindi' ? video.tags.includes('hindi') :
+        true
+      )
+    }
+
+    return filtered
+  }
+
+  const filterYouTubeAudios = () => {
+    let filtered = youtubeAudios
+
+    if (searchTerm) {
+      filtered = filtered.filter(audio =>
+        audio.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        audio.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        audio.tags.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()))
+      )
+    }
+
+    if (selectedLanguage !== 'all') {
+      filtered = filtered.filter(audio => 
+        selectedLanguage === 'english' ? audio.tags.includes('english') :
+        selectedLanguage === 'hindi' ? audio.tags.includes('hindi') :
+        true
+      )
+    }
+
+    return filtered
   }
 
   const getTypeIcon = (type: string) => {
@@ -153,8 +237,13 @@ const Resources = () => {
     console.log('Opening resource:', resource.title)
   }
 
-  const uniqueLanguages = Array.from(new Set(resources.map(r => r.language)))
   const uniqueTypes = Array.from(new Set(resources.map(r => r.type)))
+  
+  // Only include functional video language options
+  const allLanguageOptions = [
+    ...(youtubeVideos.some(v => v.tags.includes('english')) ? ['english'] : []),
+    ...(youtubeVideos.some(v => v.tags.includes('hindi')) ? ['hindi'] : [])
+  ].filter((value, index, self) => self.indexOf(value) === index)
 
   if (isLoading) {
     return (
@@ -187,7 +276,7 @@ const Resources = () => {
           transition={{ duration: 0.6, delay: 0.2 }}
           className="card mb-8"
         >
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div className={`grid grid-cols-1 gap-4 ${youtubeVideos.length > 0 ? 'md:grid-cols-4' : 'md:grid-cols-3'}`}>
             {/* Search */}
             <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
@@ -214,26 +303,114 @@ const Resources = () => {
               ))}
             </select>
 
-            {/* Language Filter */}
-            <select
-              value={selectedLanguage}
-              onChange={(e) => setSelectedLanguage(e.target.value)}
-              className="input-field"
-            >
-              <option value="all">All Languages</option>
-              {uniqueLanguages.map(language => (
-                <option key={language} value={language}>
-                  {language}
-                </option>
-              ))}
-            </select>
+            {/* Language Filter - only show if we have videos */}
+            {youtubeVideos.length > 0 && (
+              <select
+                value={selectedLanguage}
+                onChange={(e) => setSelectedLanguage(e.target.value)}
+                className="input-field"
+              >
+                <option value="all">All Languages</option>
+                {allLanguageOptions.map(language => (
+                  <option key={language} value={language}>
+                    {language.charAt(0).toUpperCase() + language.slice(1)}
+                  </option>
+                ))}
+              </select>
+            )}
 
-            {/* Results Count */}
-            <div className="flex items-center text-sm text-gray-600">
-              <span>{filteredResources.length} resources found</span>
-            </div>
+             {/* Results Count */}
+             <div className="flex items-center text-sm text-gray-600">
+               {filteredResources.length > 0 && (
+                 <span>{filteredResources.length} resources found</span>
+               )}
+               {(youtubeVideos.length > 0 || youtubeAudios.length > 0) && filteredResources.length > 0 && (
+                 <span className="ml-2">•</span>
+               )}
+               {youtubeVideos.length > 0 && (
+                 <span className={filteredResources.length > 0 ? "ml-2" : ""}>
+                   {filterYouTubeVideos().length} videos
+                 </span>
+               )}
+               {youtubeAudios.length > 0 && (
+                 <span className={filteredResources.length > 0 || youtubeVideos.length > 0 ? "ml-2" : ""}>
+                   {filterYouTubeAudios().length} audios
+                 </span>
+               )}
+               {filteredResources.length === 0 && youtubeVideos.length === 0 && youtubeAudios.length === 0 && (
+                 <span>No content found</span>
+               )}
+             </div>
           </div>
         </motion.div>
+
+        {/* YouTube Videos Section */}
+        {youtubeVideos.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.3 }}
+            className="mb-8"
+          >
+            <div className="flex items-center mb-6">
+              <Youtube className="w-6 h-6 text-red-600 mr-2" />
+              <h2 className="text-2xl font-bold text-gray-900">Educational Videos</h2>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {filterYouTubeVideos().map((video, index) => (
+                <motion.div
+                  key={video._id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, delay: index * 0.1 }}
+                >
+                  <YouTubeVideoCard video={video} />
+                </motion.div>
+              ))}
+            </div>
+            
+            {filterYouTubeVideos().length === 0 && youtubeVideos.length > 0 && (
+              <div className="text-center py-8">
+                <p className="text-gray-500">No videos found for the selected language filter.</p>
+              </div>
+            )}
+          </motion.div>
+        )}
+
+        {/* YouTube Audio Section */}
+        {youtubeAudios.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.4 }}
+            className="mb-8"
+          >
+            <div className="flex items-center mb-6">
+              <Volume2 className="w-6 h-6 text-purple-600 mr-2" />
+              <h2 className="text-2xl font-bold text-gray-900">Audio Resources</h2>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {filterYouTubeAudios().map((audio, index) => (
+                <motion.div
+                  key={audio._id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, delay: index * 0.1 }}
+                >
+                  <YouTubeAudioCard audio={audio} />
+                </motion.div>
+              ))}
+            </div>
+            
+            {filterYouTubeAudios().length === 0 && youtubeAudios.length > 0 && (
+              <div className="text-center py-8">
+                <p className="text-gray-500">No audio found for the selected filters.</p>
+              </div>
+            )}
+          </motion.div>
+        )}
 
         {/* Resources Grid */}
         <motion.div
