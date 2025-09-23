@@ -1,7 +1,6 @@
 import { Routes, Route } from 'react-router-dom'
 import { AuthProvider } from './contexts/AuthContext'
 import { LanguageProvider } from './contexts/LanguageContext'
-import ProtectedRoute from './components/ProtectedRoute'
 import RoleBasedRoute from './components/RoleBasedRoute'
 import Layout from './components/Layout'
 import Home from './pages/Home'
@@ -20,6 +19,8 @@ import SampleLogins from './pages/SampleLogins'
 import CounsellorDashboard from './pages/CounsellorDashboard'
 import CounsellorProfile from './pages/CounsellorProfile'
 import CounsellorBookings from './pages/CounsellorBookings'
+import AIChatbot from './pages/AIChatbot'
+import BreathingExercisePage from './pages/BreathingExercisePage'
 import NotFound from './pages/NotFound'
 
 function App() {
@@ -85,6 +86,16 @@ function App() {
             <Route path="counsellor-bookings" element={
               <RoleBasedRoute allowedRoles={['counsellor']}>
                 <CounsellorBookings />
+              </RoleBasedRoute>
+            } />
+            <Route path="ai-chatbot" element={
+              <RoleBasedRoute allowedRoles={['student', 'counsellor', 'admin']}>
+                <AIChatbot />
+              </RoleBasedRoute>
+            } />
+            <Route path="breathing-exercise" element={
+              <RoleBasedRoute allowedRoles={['student', 'counsellor', 'admin']}>
+                <BreathingExercisePage />
               </RoleBasedRoute>
             } />
             <Route path="sample-logins" element={<SampleLogins />} />

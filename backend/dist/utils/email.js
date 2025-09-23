@@ -21,7 +21,7 @@ const sendBookingNotification = async (counsellorEmail, studentName, slotStart, 
     const mailOptions = {
         from: process.env.SMTP_FROM || 'noreply@psychological-intervention.com',
         to: counsellorEmail,
-        subject: 'New Booking Request - Psychological Intervention Platform',
+        subject: 'New Booking Request - Rapy Platform',
         html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
         <h2 style="color: #2563eb;">New Booking Request</h2>
@@ -33,7 +33,7 @@ const sendBookingNotification = async (counsellorEmail, studentName, slotStart, 
           <p><strong>Duration:</strong> ${Math.round((slotEnd.getTime() - slotStart.getTime()) / (1000 * 60))} minutes</p>
         </div>
         <p>Please log in to your dashboard to confirm or manage this booking.</p>
-        <p>Best regards,<br>Psychological Intervention Platform</p>
+        <p>Best regards,<br>Rapy Platform</p>
       </div>
     `,
     };
@@ -45,11 +45,11 @@ const sendWelcomeEmail = async (userEmail, userName) => {
     const mailOptions = {
         from: process.env.SMTP_FROM || 'noreply@psychological-intervention.com',
         to: userEmail,
-        subject: 'Welcome to Psychological Intervention Platform',
+        subject: 'Welcome to Rapy Platform',
         html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
         <h2 style="color: #2563eb;">Welcome, ${userName}!</h2>
-        <p>Thank you for joining our psychological intervention platform. We're here to support your mental health journey.</p>
+        <p>Thank you for joining Rapy! We're here to support your mental health journey.</p>
         <p>You can now:</p>
         <ul>
           <li>Book appointments with qualified counsellors</li>
@@ -58,7 +58,7 @@ const sendWelcomeEmail = async (userEmail, userName) => {
           <li>Chat with our support system</li>
         </ul>
         <p>If you have any questions, please don't hesitate to reach out.</p>
-        <p>Best regards,<br>Psychological Intervention Platform Team</p>
+        <p>Best regards,<br>Rapy Platform Team</p>
       </div>
     `,
     };

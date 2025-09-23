@@ -1,7 +1,7 @@
 {
   "name": "psychological-intervention-backend",
   "version": "1.0.0",
-  "description": "Backend for Digital Psychological Intervention Website",
+  "description": "Backend for Rapy - Digital Mental Health Platform",
   "main": "dist/server.js",
   "scripts": {
     "dev": "nodemon src/server.ts",
@@ -16,6 +16,8 @@
     "seed": "ts-node src/scripts/seed.ts"
   },
   "dependencies": {
+    "@sendgrid/mail": "^8.1.6",
+    "axios": "^1.12.2",
     "bcryptjs": "^2.4.3",
     "compression": "^1.7.4",
     "cors": "^2.8.5",
@@ -35,6 +37,7 @@
     "passport-jwt": "^4.0.1"
   },
   "devDependencies": {
+    "@types/axios": "^0.9.36",
     "@types/bcryptjs": "^2.4.6",
     "@types/compression": "^1.7.5",
     "@types/cors": "^2.8.17",

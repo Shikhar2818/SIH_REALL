@@ -35,9 +35,9 @@ const Navbar = () => {
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-2">
             <div className="w-8 h-8 bg-primary-600 rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-sm">PI</span>
+              <span className="text-white font-bold text-sm">R</span>
             </div>
-            <span className="font-semibold text-gray-900">Psychological Intervention</span>
+            <span className="font-semibold text-gray-900">Rapy</span>
           </Link>
 
           {/* Desktop Navigation */}

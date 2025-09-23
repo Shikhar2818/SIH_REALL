@@ -69,7 +69,7 @@ router.post('/', [
   authenticateToken,
   body('title').trim().isLength({ min: 1, max: 200 }).withMessage('Title must be 1-200 characters'),
   body('description').trim().isLength({ min: 1, max: 500 }).withMessage('Description must be 1-500 characters'),
-  body('category').isIn(['article', 'video', 'document', 'link', 'exercise', 'guide']).withMessage('Invalid category'),
+  body('category').isIn(['article', 'video', 'audio', 'document', 'link', 'exercise', 'guide']).withMessage('Invalid category'),
   body('tags').optional().isArray().withMessage('Tags must be an array'),
   body('youtubeUrl').optional().isURL().withMessage('Invalid YouTube URL'),
 ], async (req: AuthRequest, res) => {

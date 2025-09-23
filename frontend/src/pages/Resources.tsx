@@ -490,49 +490,6 @@ const Resources = () => {
           </motion.div>
         )}
 
-        {/* Categories */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.6 }}
-          className="mt-12"
-        >
-          <div className="card">
-            <h2 className="text-xl font-semibold text-gray-900 mb-6">Resource Categories</h2>
-            
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div className="text-center p-6 border border-gray-200 rounded-lg hover:border-primary-300 hover:shadow-md transition-all duration-200">
-                <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Play className="w-8 h-8 text-red-600" />
-                </div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">Videos</h3>
-                <p className="text-gray-600 text-sm">
-                  Educational videos on mental health topics
-                </p>
-              </div>
-
-              <div className="text-center p-6 border border-gray-200 rounded-lg hover:border-primary-300 hover:shadow-md transition-all duration-200">
-                <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Headphones className="w-8 h-8 text-purple-600" />
-                </div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">Audio</h3>
-                <p className="text-gray-600 text-sm">
-                  Guided meditations and relaxation audio
-                </p>
-              </div>
-
-              <div className="text-center p-6 border border-gray-200 rounded-lg hover:border-primary-300 hover:shadow-md transition-all duration-200">
-                <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <FileText className="w-8 h-8 text-blue-600" />
-                </div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">Documents</h3>
-                <p className="text-gray-600 text-sm">
-                  PDF guides and self-help materials
-                </p>
-              </div>
-            </div>
-          </div>
-        </motion.div>
       </div>
     </div>
   )

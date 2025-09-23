@@ -16,7 +16,6 @@ interface AuthContextType {
   loading: boolean
   login: (email: string, password: string) => Promise<void>
   register: (data: RegisterData) => Promise<void>
-  googleLogin: (code: string, rollNumber?: string, collegeId?: string, consent?: boolean) => Promise<void>
   logout: () => void
   refreshToken: () => Promise<void>
 }
@@ -98,26 +97,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   }
 
-  const googleLogin = async (code: string, rollNumber?: string, collegeId?: string, consent?: boolean) => {
-    try {
-      const response = await api.post('/auth/google/callback', {
-        code,
-        rollNumber,
-        collegeId,
-        consent
-      })
-      const { accessToken, refreshToken, user } = response.data
-
-      localStorage.setItem('accessToken', accessToken)
-      localStorage.setItem('refreshToken', refreshToken)
-      setUser(user)
-      toast.success('Google login successful!')
-    } catch (error: any) {
-      const message = error.response?.data?.error || 'Google login failed'
-      toast.error(message)
-      throw error
-    }
-  }
 
   const logout = () => {
     localStorage.removeItem('accessToken')
@@ -151,7 +130,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     loading,
     login,
     register,
-    googleLogin,
     logout,
     refreshToken
   }

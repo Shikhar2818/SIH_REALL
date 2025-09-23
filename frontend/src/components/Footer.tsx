@@ -12,9 +12,9 @@ const Footer = () => {
           <div className="col-span-1 md:col-span-2">
             <div className="flex items-center space-x-2 mb-4">
               <div className="w-8 h-8 bg-primary-600 rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-sm">PI</span>
+                <span className="text-white font-bold text-sm">R</span>
               </div>
-              <span className="font-semibold text-lg">Psychological Intervention</span>
+              <span className="font-semibold text-lg">Rapy</span>
             </div>
             <p className="text-gray-300 text-sm leading-relaxed max-w-md">
               {t('footer.description')}
@@ -74,7 +74,7 @@ const Footer = () => {
         <div className="border-t border-gray-800 mt-8 pt-8">
           <div className="flex flex-col md:flex-row justify-between items-center">
             <p className="text-gray-400 text-sm">
-              © 2024 Psychological Intervention Platform. {t('footer.rights')}
+              © 2024 Rapy Platform. {t('footer.rights')}
             </p>
             <div className="mt-4 md:mt-0">
               <p className="text-gray-400 text-sm">

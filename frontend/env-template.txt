@@ -1,0 +1,5 @@
+# Copy this content to create your .env file in the frontend directory
+# Rename this file to .env
+
+# Frontend Environment Variables
+VITE_API_URL=http://localhost:3001

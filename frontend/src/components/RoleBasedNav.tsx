@@ -16,10 +16,13 @@ import {
   Settings,
   Youtube,
   ChevronDown,
-  Shield
+  Shield,
+  Bot,
+  Wind
 } from 'lucide-react'
 import { useAuth } from '../contexts/AuthContext'
 import { useLanguage } from '../contexts/LanguageContext'
+import EmergencyButton from './EmergencyButton'
 
 const RoleBasedNav = () => {
   const [isOpen, setIsOpen] = useState(false)
@@ -55,6 +58,7 @@ const RoleBasedNav = () => {
       { path: '/', label: t('nav.home'), icon: Home },
       { path: '/resources', label: t('nav.resources'), icon: BookOpen },
       { path: '/peer-community', label: 'Peer Community', icon: Users },
+      { path: '/ai-chatbot', label: 'AI Chatbot', icon: Bot },
     ]
 
     switch (user.role) {
@@ -106,11 +110,11 @@ const RoleBasedNav = () => {
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-2 flex-shrink-0">
             <div className="w-8 h-8 bg-primary-600 rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-sm">PI</span>
+              <span className="text-white font-bold text-sm">R</span>
             </div>
             <span className="font-semibold text-gray-900 hidden sm:inline">
-              <span className="hidden lg:inline">Psychological Intervention</span>
-              <span className="lg:hidden">PI Platform</span>
+              <span className="hidden lg:inline">Rapy</span>
+              <span className="lg:hidden">Rapy</span>
             </span>
           </Link>
 
@@ -240,6 +244,9 @@ const RoleBasedNav = () => {
 
           {/* Right side */}
           <div className="hidden md:flex items-center space-x-4">
+            {/* Emergency Button */}
+            <EmergencyButton />
+            
             {/* Language Selector */}
             <select
               value={language}
@@ -309,6 +316,11 @@ const RoleBasedNav = () => {
               className="md:hidden border-t border-gray-200"
             >
               <div className="px-2 pt-2 pb-3 space-y-1">
+                {/* Emergency Button for Mobile */}
+                <div className="px-3 py-2">
+                  <EmergencyButton className="w-full justify-center" />
+                </div>
+                
                 {navItems.map((item, index) => (
                   item.type === 'dropdown' ? (
                     <div key={index}>

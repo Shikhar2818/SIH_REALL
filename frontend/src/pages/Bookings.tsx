@@ -4,6 +4,7 @@ import { Calendar, Clock, User, MapPin, Plus, Filter } from 'lucide-react'
 import { api } from '../utils/api'
 import { formatDateTime, formatTime } from '../utils/date'
 import toast from 'react-hot-toast'
+import { useAuth } from '../contexts/AuthContext'
 
 interface Counsellor {
   _id: string
@@ -19,7 +20,7 @@ interface Counsellor {
 
 interface Booking {
   _id: string
-  counsellorId: Counsellor
+  counsellorId: Counsellor | null
   slotStart: string
   slotEnd: string
   status: 'pending' | 'confirmed' | 'cancelled' | 'completed'
@@ -28,6 +29,7 @@ interface Booking {
 }
 
 const Bookings = () => {
+  const { user } = useAuth()
   const [counsellors, setCounsellors] = useState<Counsellor[]>([])
   const [bookings, setBookings] = useState<Booking[]>([])
   const [selectedCounsellor, setSelectedCounsellor] = useState<Counsellor | null>(null)
@@ -43,10 +45,14 @@ const Bookings = () => {
 
   const fetchCounsellors = async () => {
     try {
+      setIsLoading(true)
       const response = await api.get('/counsellors')
       setCounsellors(response.data.counsellors)
     } catch (error) {
+      console.error('Error fetching counsellors:', error)
       toast.error('Failed to fetch counsellors')
+    } finally {
+      setIsLoading(false)
     }
   }
 
@@ -55,6 +61,7 @@ const Bookings = () => {
       const response = await api.get('/bookings/my-bookings')
       setBookings(response.data.bookings)
     } catch (error) {
+      console.error('Error fetching bookings:', error)
       toast.error('Failed to fetch bookings')
     }
   }
@@ -123,6 +130,18 @@ const Bookings = () => {
       default:
         return 'bg-gray-100 text-gray-800'
     }
+  }
+
+  // Show loading state while fetching data
+  if (isLoading && counsellors.length === 0) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading counsellors...</p>
+        </div>
+      </div>
+    )
   }
 
   return (
@@ -219,12 +238,12 @@ const Bookings = () => {
                 </div>
               ) : (
                 <div className="space-y-4">
-                  {bookings.map((booking) => (
+                  {bookings.filter(booking => booking.counsellorId).map((booking) => (
                     <div key={booking._id} className="border border-gray-200 rounded-lg p-4">
                       <div className="flex items-start justify-between mb-2">
                         <div>
                           <h3 className="font-medium text-gray-900">
-                            {booking.counsellorId.name}
+                            {booking.counsellorId?.name || 'Unknown Counsellor'}
                           </h3>
                           <p className="text-sm text-gray-600">
                             {formatDateTime(booking.slotStart)}

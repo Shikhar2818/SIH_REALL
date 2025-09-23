@@ -13,10 +13,16 @@ import {
   Users,
   CheckCircle,
   Plus,
-  Activity
+  Activity,
+  Wind,
+  Grid3X3,
+  Target
 } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import toast from 'react-hot-toast'
+import BreathingExercise from '../components/BreathingExercise'
+import SudokuGame from '../components/SudokuGame'
+import TicTacToeGame from '../components/TicTacToeGame'
 
 interface Booking {
   _id: string
@@ -24,7 +30,7 @@ interface Booking {
     _id: string
     name: string
     email: string
-  }
+  } | null
   slotStart: string
   slotEnd: string
   status: 'pending' | 'confirmed' | 'cancelled' | 'completed'
@@ -55,6 +61,9 @@ const StudentDashboard = () => {
   const [screenings, setScreenings] = useState<Screening[]>([])
   const [recentPosts, setRecentPosts] = useState<ForumPost[]>([])
   const [isLoading, setIsLoading] = useState(true)
+  const [showBreathingExercise, setShowBreathingExercise] = useState(false)
+  const [showSudokuGame, setShowSudokuGame] = useState(false)
+  const [showTicTacToeGame, setShowTicTacToeGame] = useState(false)
 
   useEffect(() => {
     fetchDashboardData()
@@ -90,6 +99,7 @@ const StudentDashboard = () => {
         booking.status === 'pending' || booking.status === 'confirmed'
       )
       .filter(booking => new Date(booking.slotStart) > new Date())
+      .filter(booking => booking.counsellorId) // Filter out bookings with null counsellorId
       .sort((a, b) => new Date(a.slotStart).getTime() - new Date(b.slotStart).getTime())
       .slice(0, 3)
   }
@@ -99,16 +109,18 @@ const StudentDashboard = () => {
     
     // Add booking activities
     bookings.slice(0, 3).forEach(booking => {
-      activities.push({
-        id: `booking-${booking._id}`,
-        type: 'booking',
-        title: `Appointment with ${booking.counsellorId.name}`,
-        description: `Status: ${booking.status}`,
-        time: booking.createdAt,
-        icon: Calendar,
-        color: 'text-blue-600',
-        bgColor: 'bg-blue-100',
-      })
+      if (booking.counsellorId) { // Only add if counsellorId exists
+        activities.push({
+          id: `booking-${booking._id}`,
+          type: 'booking',
+          title: `Appointment with ${booking.counsellorId?.name || 'Unknown Counsellor'}`,
+          description: `Status: ${booking.status}`,
+          time: booking.createdAt,
+          icon: Calendar,
+          color: 'text-blue-600',
+          bgColor: 'bg-blue-100',
+        })
+      }
     })
 
     // Add screening activities
@@ -314,6 +326,51 @@ const StudentDashboard = () => {
                     </div>
                   </div>
                 </Link>
+
+                <button
+                  onClick={() => setShowBreathingExercise(true)}
+                  className="block p-4 border border-gray-200 rounded-lg hover:border-primary-300 hover:shadow-md transition-all duration-200 w-full text-left"
+                >
+                  <div className="flex items-start space-x-3">
+                    <div className="w-10 h-10 bg-teal-50 rounded-lg flex items-center justify-center">
+                      <Wind className="w-5 h-5 text-teal-600" />
+                    </div>
+                    <div>
+                      <h3 className="font-medium text-gray-900">Breathing Exercise</h3>
+                      <p className="text-sm text-gray-600">Find calm and reduce stress</p>
+                    </div>
+                  </div>
+                </button>
+
+                <button
+                  onClick={() => setShowSudokuGame(true)}
+                  className="block p-4 border border-gray-200 rounded-lg hover:border-primary-300 hover:shadow-md transition-all duration-200 w-full text-left"
+                >
+                  <div className="flex items-start space-x-3">
+                    <div className="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center">
+                      <Grid3X3 className="w-5 h-5 text-blue-600" />
+                    </div>
+                    <div>
+                      <h3 className="font-medium text-gray-900">Sudoku</h3>
+                      <p className="text-sm text-gray-600">Logic puzzle game</p>
+                    </div>
+                  </div>
+                </button>
+
+                <button
+                  onClick={() => setShowTicTacToeGame(true)}
+                  className="block p-4 border border-gray-200 rounded-lg hover:border-primary-300 hover:shadow-md transition-all duration-200 w-full text-left"
+                >
+                  <div className="flex items-start space-x-3">
+                    <div className="w-10 h-10 bg-green-50 rounded-lg flex items-center justify-center">
+                      <Target className="w-5 h-5 text-green-600" />
+                    </div>
+                    <div>
+                      <h3 className="font-medium text-gray-900">Tic Tac Toe</h3>
+                      <p className="text-sm text-gray-600">Classic strategy game</p>
+                    </div>
+                  </div>
+                </button>
               </div>
             </div>
           </motion.div>
@@ -380,7 +437,9 @@ const StudentDashboard = () => {
                         <Calendar className="w-5 h-5 text-blue-600" />
                       </div>
                       <div>
-                        <p className="font-medium text-gray-900">Session with {booking.counsellorId.name}</p>
+                        <p className="font-medium text-gray-900">
+                          Session with {booking.counsellorId?.name || 'Unknown Counsellor'}
+                        </p>
                         <p className="text-sm text-gray-600">{formatDateTime(booking.slotStart)}</p>
                       </div>
                     </div>
@@ -424,6 +483,30 @@ const StudentDashboard = () => {
           </div>
         </motion.div>
       </div>
+
+      {/* Breathing Exercise Modal */}
+      {showBreathingExercise && (
+        <BreathingExercise
+          isModal={true}
+          onClose={() => setShowBreathingExercise(false)}
+        />
+      )}
+
+      {/* Sudoku Game Modal */}
+      {showSudokuGame && (
+        <SudokuGame
+          isModal={true}
+          onClose={() => setShowSudokuGame(false)}
+        />
+      )}
+
+      {/* Tic Tac Toe Game Modal */}
+      {showTicTacToeGame && (
+        <TicTacToeGame
+          isModal={true}
+          onClose={() => setShowTicTacToeGame(false)}
+        />
+      )}
     </div>
   )
 }

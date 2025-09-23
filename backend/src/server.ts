@@ -19,6 +19,8 @@ import counsellorAuthRoutes from './routes/counsellor';
 import counsellorExtendedRoutes from './routes/counsellorExtended';
 import forumRoutes from './routes/forum';
 import resourcesRoutes from './routes/resources';
+import aiChatRoutes from './routes/aiChat';
+import credentialsRoutes from './routes/credentials';
 
 // Load environment variables
 dotenv.config();
@@ -100,6 +102,8 @@ app.use('/api/counsellor', counsellorAuthRoutes);
 app.use('/api/counsellor/extended', counsellorExtendedRoutes);
 app.use('/api/forum', forumRoutes);
 app.use('/api/resources', resourcesRoutes);
+app.use('/api/ai-chat', aiChatRoutes);
+app.use('/api/credentials', credentialsRoutes);
 
 // 404 handler
 app.use('*', (req, res) => {

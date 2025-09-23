@@ -3,6 +3,7 @@ import mongoose, { Document, Schema } from 'mongoose';
 export interface IUser extends Document {
   name: string;
   email: string;
+  username?: string;
   rollNumber?: string;
   collegeId?: string;
   hashedPassword?: string;
@@ -26,6 +27,12 @@ const UserSchema = new Schema<IUser>(
       required: true,
       unique: true,
       lowercase: true,
+      trim: true,
+    },
+    username: {
+      type: String,
+      unique: true,
+      sparse: true,
       trim: true,
     },
     rollNumber: {

@@ -2,7 +2,6 @@ import { Outlet } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import RoleBasedNav from './RoleBasedNav'
 import Footer from './Footer'
-import ChatWidget from './ChatWidget'
 
 const Layout = () => {
   return (
@@ -17,7 +16,6 @@ const Layout = () => {
         <Outlet />
       </motion.main>
       <Footer />
-      <ChatWidget />
     </div>
   )
 }

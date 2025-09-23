@@ -57,10 +57,25 @@ const YouTubeAudioCard: React.FC<YouTubeAudioCardProps> = ({ audio }) => {
         onClick={handlePlayClick}
       >
         {/* Audio Thumbnail */}
-        <div className="relative aspect-video bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center">
-          <div className="text-center text-white">
-            <Music className="w-16 h-16 mx-auto mb-2 opacity-80" />
-            <Volume2 className="w-8 h-8 mx-auto opacity-60" />
+        <div className="relative aspect-video bg-gray-200">
+          {/* YouTube Thumbnail */}
+          <img
+            src={audio.thumbnailUrl || `https://img.youtube.com/vi/${audio.youtubeId}/maxresdefault.jpg`}
+            alt={audio.title}
+            className="w-full h-full object-cover"
+            onError={(e) => {
+              // Fallback to high quality if maxres fails
+              const target = e.target as HTMLImageElement;
+              target.src = `https://img.youtube.com/vi/${audio.youtubeId}/hqdefault.jpg`;
+            }}
+          />
+          
+          {/* Audio Overlay */}
+          <div className="absolute inset-0 bg-gradient-to-br from-purple-500/30 to-pink-500/30 flex items-center justify-center">
+            <div className="text-center text-white">
+              <Music className="w-12 h-12 mx-auto mb-1 opacity-90" />
+              <Volume2 className="w-6 h-6 mx-auto opacity-70" />
+            </div>
           </div>
           
           {/* Play Button Overlay */}
@@ -84,6 +99,12 @@ const YouTubeAudioCard: React.FC<YouTubeAudioCardProps> = ({ audio }) => {
               Featured
             </div>
           )}
+
+          {/* Audio Indicator */}
+          <div className="absolute bottom-2 left-2 bg-purple-600 text-white px-2 py-1 rounded-full text-xs flex items-center">
+            <Volume2 className="w-3 h-3 mr-1" />
+            Audio
+          </div>
         </div>
 
         {/* Audio Information */}

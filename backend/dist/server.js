@@ -55,6 +55,7 @@ const counsellor_1 = __importDefault(require("./routes/counsellor"));
 const counsellorExtended_1 = __importDefault(require("./routes/counsellorExtended"));
 const forum_1 = __importDefault(require("./routes/forum"));
 const resources_1 = __importDefault(require("./routes/resources"));
+const aiChat_1 = __importDefault(require("./routes/aiChat"));
 dotenv_1.default.config();
 const app = (0, express_1.default)();
 const PORT = process.env.PORT || 3001;
@@ -120,6 +121,7 @@ app.use('/api/counsellor', counsellor_1.default);
 app.use('/api/counsellor/extended', counsellorExtended_1.default);
 app.use('/api/forum', forum_1.default);
 app.use('/api/resources', resources_1.default);
+app.use('/api/ai-chat', aiChat_1.default);
 app.use('*', (req, res) => {
     res.status(404).json({ error: 'Route not found' });
 });

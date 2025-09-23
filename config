@@ -1,0 +1,36 @@
+# Google OAuth Configuration
+GOOGLE_CLIENT_ID=your_google_client_id_here
+GOOGLE_CLIENT_SECRET=your_google_client_secret_here
+
+# JWT Secrets (Change these in production!)
+JWT_SECRET=your-super-secret-jwt-key-change-in-production
+JWT_REFRESH_SECRET=your-super-secret-refresh-key-change-in-production
+
+# Database Configuration
+MONGODB_URI=mongodb://admin:password@localhost:27017/psychological_intervention?authSource=admin
+
+# Email Configuration (Development - MailHog)
+SMTP_HOST=localhost
+SMTP_PORT=1025
+SMTP_USER=
+SMTP_PASS=
+SMTP_FROM=noreply@psychological-intervention.com
+
+# Email Configuration (Production - Real SMTP)
+# SMTP_HOST=smtp.gmail.com
+# SMTP_PORT=587
+# SMTP_USER=your-email@gmail.com
+# SMTP_PASS=your-app-password
+# SMTP_FROM=noreply@yourdomain.com
+
+# Application Configuration
+NODE_ENV=development
+PORT=3001
+ALLOW_MINIMAL_SEED=true
+
+# Frontend Configuration
+VITE_API_URL=http://localhost:3001
+VITE_GOOGLE_CLIENT_ID=your_google_client_id_here
+
+# AI Chatbot Configuration
+AI_CHATBOT_URL=http://localhost:5000

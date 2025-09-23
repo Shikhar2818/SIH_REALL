@@ -10,7 +10,10 @@ import {
   Shield, 
   Clock,
   CheckCircle,
-  ArrowRight
+  ArrowRight,
+  Check,
+  X,
+  Star
 } from 'lucide-react'
 
 const Home = () => {
@@ -55,6 +58,81 @@ const Home = () => {
     'Mental health screening tools',
     'Educational resources and materials',
     'Stigma-free environment',
+  ]
+
+  const comparisonData = [
+    {
+      feature: 'Self-trained AI Chatbot',
+      rapy: true,
+      betterhelp: false,
+      talkspace: false,
+      sevencups: false,
+      headspace: false,
+      calm: false,
+    },
+    {
+      feature: 'Regional Multi-lingual Resources',
+      rapy: true,
+      betterhelp: false,
+      talkspace: false,
+      sevencups: false,
+      headspace: false,
+      calm: false,
+    },
+    {
+      feature: 'Counselor Appointment',
+      rapy: true,
+      betterhelp: true,
+      talkspace: true,
+      sevencups: true,
+      headspace: false,
+      calm: false,
+    },
+    {
+      feature: 'Peer-to-Peer Community',
+      rapy: true,
+      betterhelp: false,
+      talkspace: false,
+      sevencups: true,
+      headspace: false,
+      calm: false,
+    },
+    {
+      feature: 'Soothing Breathing Exercises',
+      rapy: true,
+      betterhelp: false,
+      talkspace: false,
+      sevencups: false,
+      headspace: true,
+      calm: true,
+    },
+    {
+      feature: 'Personalized Progress Tracking',
+      rapy: true,
+      betterhelp: true,
+      talkspace: true,
+      sevencups: false,
+      headspace: true,
+      calm: true,
+    },
+    {
+      feature: 'Anonymity & Privacy Focus',
+      rapy: true,
+      betterhelp: true,
+      talkspace: true,
+      sevencups: true,
+      headspace: true,
+      calm: true,
+    },
+    {
+      feature: '24/7 Emergency Support',
+      rapy: true,
+      betterhelp: true,
+      talkspace: true,
+      sevencups: true,
+      headspace: false,
+      calm: false,
+    },
   ]
 
   return (
@@ -223,46 +301,185 @@ const Home = () => {
         </div>
       </section>
 
-      {/* CTA Section */}
-      <section className="py-20 bg-primary-600">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+      {/* Comparison Table Section */}
+      <section className="py-20 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
+            className="text-center mb-16"
           >
-            <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">
-              Ready to Start Your Mental Health Journey?
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+              How We Compare to Other Platforms
             </h2>
-            <p className="text-xl text-primary-100 mb-8 max-w-2xl mx-auto">
-              Join thousands of students who have found support and healing through our platform.
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+              See why RAPY stands out with unique features that other mental health platforms don't offer
             </p>
-            {!user && (
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link
-                to="/register"
-                className="bg-white text-primary-600 hover:bg-gray-50 font-semibold py-3 px-8 rounded-lg transition-colors duration-200 inline-flex items-center justify-center"
-              >
-                Get Started Today
-                <ArrowRight className="ml-2 w-5 h-5" />
-              </Link>
-              <Link
-                to="/login"
-                className="border-2 border-white text-white hover:bg-white hover:text-primary-600 font-semibold py-3 px-8 rounded-lg transition-colors duration-200 inline-flex items-center justify-center"
-              >
-                Sign In
-              </Link>
-              <Link
-                to="/sample-logins"
-                className="border-2 border-white text-white hover:bg-white hover:text-primary-600 font-semibold py-3 px-8 rounded-lg transition-colors duration-200 inline-flex items-center justify-center"
-              >
-                Test with Sample Logins
-              </Link>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+            className="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-200"
+          >
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead>
+                  <tr className="bg-gradient-to-r from-primary-600 to-blue-600 text-white">
+                    <th className="px-6 py-4 text-left font-semibold text-sm uppercase tracking-wider">
+                      Feature
+                    </th>
+                    <th className="px-6 py-4 text-center font-semibold text-sm uppercase tracking-wider relative">
+                      <div className="flex items-center justify-center space-x-2">
+                        <Star className="w-4 h-4" />
+                        <span>RAPY</span>
+                      </div>
+                      <div className="absolute -top-2 -right-2 bg-yellow-400 text-yellow-900 text-xs font-bold px-2 py-1 rounded-full">
+                        BEST
+                      </div>
+                    </th>
+                    <th className="px-6 py-4 text-center font-semibold text-sm uppercase tracking-wider">
+                      BetterHelp
+                    </th>
+                    <th className="px-6 py-4 text-center font-semibold text-sm uppercase tracking-wider">
+                      Talkspace
+                    </th>
+                    <th className="px-6 py-4 text-center font-semibold text-sm uppercase tracking-wider">
+                      7 Cups
+                    </th>
+                    <th className="px-6 py-4 text-center font-semibold text-sm uppercase tracking-wider">
+                      Headspace
+                    </th>
+                    <th className="px-6 py-4 text-center font-semibold text-sm uppercase tracking-wider">
+                      Calm
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-200">
+                  {comparisonData.map((row, index) => (
+                    <motion.tr
+                      key={row.feature}
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ duration: 0.6, delay: index * 0.1 }}
+                      className="hover:bg-gray-50 transition-colors"
+                    >
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                        {row.feature}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-center">
+                        <div className="flex items-center justify-center">
+                          {row.rapy ? (
+                            <div className="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center">
+                              <Check className="w-4 h-4 text-green-600" />
+                            </div>
+                          ) : (
+                            <div className="w-6 h-6 bg-red-100 rounded-full flex items-center justify-center">
+                              <X className="w-4 h-4 text-red-600" />
+                            </div>
+                          )}
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-center">
+                        <div className="flex items-center justify-center">
+                          {row.betterhelp ? (
+                            <div className="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center">
+                              <Check className="w-4 h-4 text-green-600" />
+                            </div>
+                          ) : (
+                            <div className="w-6 h-6 bg-red-100 rounded-full flex items-center justify-center">
+                              <X className="w-4 h-4 text-red-600" />
+                            </div>
+                          )}
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-center">
+                        <div className="flex items-center justify-center">
+                          {row.talkspace ? (
+                            <div className="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center">
+                              <Check className="w-4 h-4 text-green-600" />
+                            </div>
+                          ) : (
+                            <div className="w-6 h-6 bg-red-100 rounded-full flex items-center justify-center">
+                              <X className="w-4 h-4 text-red-600" />
+                            </div>
+                          )}
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-center">
+                        <div className="flex items-center justify-center">
+                          {row.sevencups ? (
+                            <div className="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center">
+                              <Check className="w-4 h-4 text-green-600" />
+                            </div>
+                          ) : (
+                            <div className="w-6 h-6 bg-red-100 rounded-full flex items-center justify-center">
+                              <X className="w-4 h-4 text-red-600" />
+                            </div>
+                          )}
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-center">
+                        <div className="flex items-center justify-center">
+                          {row.headspace ? (
+                            <div className="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center">
+                              <Check className="w-4 h-4 text-green-600" />
+                            </div>
+                          ) : (
+                            <div className="w-6 h-6 bg-red-100 rounded-full flex items-center justify-center">
+                              <X className="w-4 h-4 text-red-600" />
+                            </div>
+                          )}
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-center">
+                        <div className="flex items-center justify-center">
+                          {row.calm ? (
+                            <div className="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center">
+                              <Check className="w-4 h-4 text-green-600" />
+                            </div>
+                          ) : (
+                            <div className="w-6 h-6 bg-red-100 rounded-full flex items-center justify-center">
+                              <X className="w-4 h-4 text-red-600" />
+                            </div>
+                          )}
+                        </div>
+                      </td>
+                    </motion.tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
-            )}
+          </motion.div>
+
+          {/* Summary Stats */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.4 }}
+            className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-8"
+          >
+            <div className="text-center">
+              <div className="text-4xl font-bold text-primary-600 mb-2">8/8</div>
+              <div className="text-lg font-semibold text-gray-900 mb-1">Features</div>
+              <div className="text-gray-600">RAPY offers all features</div>
+            </div>
+            <div className="text-center">
+              <div className="text-4xl font-bold text-green-600 mb-2">2</div>
+              <div className="text-lg font-semibold text-gray-900 mb-1">Unique Features</div>
+              <div className="text-gray-600">AI Chatbot & Multi-lingual</div>
+            </div>
+            <div className="text-center">
+              <div className="text-4xl font-bold text-blue-600 mb-2">100%</div>
+              <div className="text-lg font-semibold text-gray-900 mb-1">Complete</div>
+              <div className="text-gray-600">All essential features included</div>
+            </div>
           </motion.div>
         </div>
       </section>
+
     </div>
   )
 }
